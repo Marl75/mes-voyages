@@ -66,10 +66,10 @@
           <input type="text" id="search-input" placeholder="Rechercher…" oninput="onSearch()">
         </div>
         <div class="list-filters" id="list-filters">
-          <button class="filter-btn active" data-filter="all" onclick="setFilter('all')">Tous</button>
-          <button class="filter-btn" data-filter="done" onclick="setFilter('done')">Visités</button>
-          <button class="filter-btn" data-filter="planned" onclick="setFilter('planned')">Planifiés</button>
-          <button class="filter-btn" data-filter="idea" onclick="setFilter('idea')">Idées</button>
+          <button class="filter-btn active" data-filter="all" onclick="toggleFilter('all')">Tous</button>
+          <button class="filter-btn active" data-filter="done" onclick="toggleFilter('done')">Visités</button>
+          <button class="filter-btn active" data-filter="planned" onclick="toggleFilter('planned')">Planifiés</button>
+          <button class="filter-btn active" data-filter="idea" onclick="toggleFilter('idea')">Idées</button>
         </div>
         <div class="list-months" id="month-bar"></div>
         <div id="list-content"></div>
@@ -199,6 +199,7 @@
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>

@@ -172,6 +172,9 @@ body {
   cursor: pointer; transition: all 0.2s;
 }
 .filter-btn.active { background: var(--accent); color: #fff; }
+.filter-btn.active[data-filter="done"] { background: var(--green); }
+.filter-btn.active[data-filter="planned"] { background: var(--amber); }
+.filter-btn.active[data-filter="idea"] { background: #BBB; }
 
 .list-months {
   display: flex; gap: 1px; padding: 2px 16px 8px;
@@ -260,8 +263,21 @@ body {
 
 .map-popup { font-family: 'Plus Jakarta Sans', sans-serif; }
 .map-popup .popup-name { font-size: 0.82rem; font-weight: 700; }
-.map-popup .popup-country { font-size: 0.68rem; color: var(--text-secondary); }
+.map-popup .popup-country { font-size: 0.68rem; color: var(--text-secondary); margin-bottom: 4px; }
 .map-popup .popup-date { font-size: 0.65rem; font-weight: 600; margin-top: 4px; }
+.map-popup .popup-dest {
+  padding: 6px 0; font-size: 0.78rem; font-weight: 600;
+  cursor: pointer; border-top: 1px solid var(--border);
+}
+.map-popup .popup-dest:hover { color: var(--amber); }
+
+.country-tooltip {
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+  font-size: 0.75rem !important; font-weight: 600 !important;
+  padding: 6px 10px !important; border-radius: 8px !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12) !important;
+  border: none !important;
+}
 
 /* ============ PLANNING VIEW ============ */
 .planning-header {

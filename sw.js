@@ -1,10 +1,9 @@
-const CACHE_NAME = 'mes-voyages-v4';
+const CACHE_NAME = 'mes-voyages-v14';
 const STATIC_ASSETS = [
   './',
   './index.html',
   './style.css',
   './app.js',
-  './manifest.json',
   './icons/icon-192.png',
   './icons/icon-512.png',
   'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap',
@@ -36,7 +35,8 @@ self.addEventListener('fetch', event => {
       url.origin === 'https://identitytoolkit.googleapis.com' ||
       url.origin === 'https://securetoken.googleapis.com' ||
       url.hostname === 'nominatim.openstreetmap.org' ||
-      url.hostname.endsWith('.wikipedia.org')) {
+      url.hostname.endsWith('.wikipedia.org') ||
+      url.pathname.endsWith('manifest.json')) {
     return;
   }
 

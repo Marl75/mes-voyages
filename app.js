@@ -104,7 +104,7 @@ const state = {
   user: null,
   destinations: [],
   currentView: 'list',
-  currentFilter: 'all',
+  activeFilters: new Set(['done', 'planned', 'idea']),
   currentMonth: null,
   searchQuery: '',
   planningYear: new Date().getFullYear(),
@@ -121,6 +121,8 @@ const state = {
 
 let mainMap = null;
 let markersLayer = null;
+let countriesLayer = null;
+let countriesGeoJson = null;
 let geocodeTimer = null;
 let confirmCallback = null;
 
@@ -327,7 +329,7 @@ function logout() {
   state.destinations = [];
   state.editingId = null;
   state.detailId = null;
-  state.currentFilter = 'all';
+  state.activeFilters = new Set(['done', 'planned', 'idea']);
   state.currentMonth = null;
   state.searchQuery = '';
   localStorage.removeItem('mv-user');
@@ -337,6 +339,7 @@ function logout() {
   document.getElementById('auth-email').value = '';
   document.getElementById('auth-password').value = '';
   document.getElementById('search-input').value = '';
+  if (countriesLayer) renderMapCountries();
   if (markersLayer) markersLayer.clearLayers();
 }
 
@@ -539,12 +542,32 @@ function switchView(view) {
 // FILTERING & SEARCH
 // ============================================
 
-function setFilter(filter) {
-  state.currentFilter = filter;
+function toggleFilter(filter) {
+  if (filter === 'all') {
+    const allActive = state.activeFilters.size === 3;
+    if (allActive) return;
+    state.activeFilters = new Set(['done', 'planned', 'idea']);
+  } else {
+    if (state.activeFilters.has(filter)) {
+      if (state.activeFilters.size > 1) state.activeFilters.delete(filter);
+    } else {
+      state.activeFilters.add(filter);
+    }
+  }
+  updateFilterButtons();
+  renderAll();
+}
+
+function updateFilterButtons() {
+  const allActive = state.activeFilters.size === 3;
   document.querySelectorAll('.filter-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.filter === filter);
+    const f = btn.dataset.filter;
+    if (f === 'all') {
+      btn.classList.toggle('active', allActive);
+    } else {
+      btn.classList.toggle('active', state.activeFilters.has(f));
+    }
   });
-  renderList();
 }
 
 function onSearch() {
@@ -564,8 +587,8 @@ function getFilteredDestinations() {
   let list = [...state.destinations];
 
   // Status filter
-  if (state.currentFilter !== 'all') {
-    list = list.filter(d => d.status === state.currentFilter);
+  if (state.activeFilters.size < 3) {
+    list = list.filter(d => state.activeFilters.has(d.status || 'idea'));
   }
 
   // Month filter
@@ -731,66 +754,162 @@ function renderDestRow(d) {
 // MAP
 // ============================================
 
+const STATUS_COLORS = {
+  done: { fill: '#22C55E', opacity: 0.45 },
+  planned: { fill: '#E5A33B', opacity: 0.4 },
+  idea: { fill: '#A0A0A0', opacity: 0.3 }
+};
+const STATUS_PRIORITY = { done: 3, planned: 2, idea: 1 };
+
+const NUM_TO_A2 = {
+  '004':'AF','008':'AL','012':'DZ','016':'AS','020':'AD','024':'AO','028':'AG','032':'AR','051':'AM',
+  '036':'AU','040':'AT','031':'AZ','044':'BS','048':'BH','050':'BD','052':'BB','112':'BY','056':'BE',
+  '084':'BZ','204':'BJ','064':'BT','068':'BO','070':'BA','072':'BW','076':'BR','096':'BN','100':'BG',
+  '854':'BF','108':'BI','132':'CV','116':'KH','120':'CM','124':'CA','140':'CF','148':'TD','152':'CL',
+  '156':'CN','170':'CO','174':'KM','178':'CG','180':'CD','188':'CR','384':'CI','191':'HR','192':'CU',
+  '196':'CY','203':'CZ','208':'DK','262':'DJ','212':'DM','214':'DO','218':'EC','818':'EG','222':'SV',
+  '226':'GQ','232':'ER','233':'EE','748':'SZ','231':'ET','242':'FJ','246':'FI','250':'FR','266':'GA',
+  '270':'GM','268':'GE','276':'DE','288':'GH','300':'GR','308':'GD','320':'GT','324':'GN','624':'GW',
+  '328':'GY','332':'HT','340':'HN','348':'HU','352':'IS','356':'IN','360':'ID','364':'IR','368':'IQ',
+  '372':'IE','376':'IL','380':'IT','388':'JM','392':'JP','400':'JO','398':'KZ','404':'KE','296':'KI',
+  '408':'KP','410':'KR','414':'KW','417':'KG','418':'LA','428':'LV','422':'LB','426':'LS','430':'LR',
+  '434':'LY','438':'LI','440':'LT','442':'LU','807':'MK','450':'MG','454':'MW','458':'MY','462':'MV',
+  '466':'ML','470':'MT','584':'MH','478':'MR','480':'MU','484':'MX','583':'FM','498':'MD','492':'MC',
+  '496':'MN','499':'ME','504':'MA','508':'MZ','104':'MM','516':'NA','520':'NR','524':'NP','528':'NL',
+  '554':'NZ','558':'NI','562':'NE','566':'NG','578':'NO','512':'OM','586':'PK','585':'PW','591':'PA',
+  '598':'PG','600':'PY','604':'PE','608':'PH','616':'PL','620':'PT','634':'QA','642':'RO','643':'RU',
+  '646':'RW','659':'KN','662':'LC','670':'VC','882':'WS','674':'SM','678':'ST','682':'SA','686':'SN',
+  '688':'RS','690':'SC','694':'SL','702':'SG','703':'SK','705':'SI','090':'SB','706':'SO','710':'ZA',
+  '728':'SS','724':'ES','144':'LK','729':'SD','740':'SR','752':'SE','756':'CH','760':'SY','158':'TW',
+  '762':'TJ','834':'TZ','764':'TH','626':'TL','768':'TG','776':'TO','780':'TT','788':'TN','792':'TR',
+  '795':'TM','798':'TV','800':'UG','804':'UA','784':'AE','826':'GB','840':'US','858':'UY','860':'UZ',
+  '548':'VU','862':'VE','704':'VN','887':'YE','894':'ZM','716':'ZW','275':'PS','010':'AQ','-99':'XK'
+};
+const A2_TO_NUM = Object.fromEntries(Object.entries(NUM_TO_A2).map(([k, v]) => [v, k]));
+
 function initMap() {
   if (mainMap) return;
   const el = document.getElementById('map');
   if (!el) return;
 
-  mainMap = L.map('map', { zoomControl: true, attributionControl: false }).setView([35, 15], 3);
+  mainMap = L.map('map', {
+    zoomControl: true, attributionControl: false
+  }).setView([30, 10], 2);
 
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
     maxZoom: 19, subdomains: 'abcd'
   }).addTo(mainMap);
 
+  mainMap.createPane('countriesPane');
+  mainMap.getPane('countriesPane').style.pointerEvents = 'none';
+  mainMap.getPane('countriesPane').style.zIndex = 250;
+  countriesLayer = L.layerGroup().addTo(mainMap);
   markersLayer = L.layerGroup().addTo(mainMap);
-  renderMapMarkers();
+
+  loadCountriesGeoJson();
+}
+
+async function loadCountriesGeoJson() {
+  try {
+    const res = await fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json');
+    const world = await res.json();
+    countriesGeoJson = topojson.feature(world, world.objects.countries);
+    renderMapCountries();
+  } catch (err) {
+    console.warn('GeoJSON load error:', err);
+  }
+}
+
+function getCountryStatus() {
+  const filtered = getFilteredDestinations();
+  const countryMap = {};
+
+  filtered.forEach(dest => {
+    const a2 = (dest.countryCode || '').toUpperCase();
+    const num = A2_TO_NUM[a2];
+    if (!num) return;
+    const status = dest.status || 'idea';
+    const existing = countryMap[num];
+    if (!existing || STATUS_PRIORITY[status] > STATUS_PRIORITY[existing.status]) {
+      countryMap[num] = { status, dests: [...(existing?.dests || []), dest], a2 };
+    } else {
+      existing.dests.push(dest);
+    }
+  });
+
+  return countryMap;
+}
+
+function renderMapCountries() {
+  if (!mainMap || !countriesLayer) return;
+
+  const countryMap = getCountryStatus();
+
+  countriesLayer.clearLayers();
+  if (countriesGeoJson) {
+    countriesGeoJson.features.forEach(feature => {
+      const num = String(feature.id);
+      const match = countryMap[num];
+      if (!match) return;
+      const c = STATUS_COLORS[match.status];
+      L.geoJSON(feature, {
+        style: () => ({
+          fillColor: c.fill, fillOpacity: c.opacity,
+          weight: 0.5, color: '#ccc'
+        }),
+        pane: 'countriesPane',
+        interactive: false
+      }).addTo(countriesLayer);
+    });
+  }
+
+  if (markersLayer) {
+    markersLayer.clearLayers();
+    const filtered = getFilteredDestinations();
+    filtered.forEach(dest => {
+      if (!dest.lat || !dest.lng) return;
+      const statusColor = STATUS_COLORS[dest.status || 'idea'];
+      const marker = L.circleMarker([dest.lat, dest.lng], {
+        radius: 6, fillColor: statusColor.fill, fillOpacity: 0.9,
+        weight: 2, color: '#fff'
+      });
+      marker.bindTooltip(`${getFlag((dest.countryCode || '').toLowerCase())} ${escapeHtml(dest.name)}`, {
+        className: 'country-tooltip'
+      });
+      marker.on('click', () => showDetail(dest.id));
+      marker.addTo(markersLayer);
+    });
+  }
+
+  fitMapToCountries(countryMap);
+}
+
+function fitMapToCountries(countryMap) {
+  if (!mainMap || !countriesLayer) return;
+  if (Object.keys(countryMap).length === 0) return;
+
+  const bounds = L.latLngBounds();
+  countriesLayer.eachLayer(wrapper => {
+    wrapper.eachLayer(layer => {
+      if (layer.getBounds) {
+        const b = layer.getBounds();
+        if (b.isValid()) bounds.extend(b);
+      }
+    });
+  });
+
+  if (bounds.isValid()) {
+    mainMap.fitBounds(bounds, { padding: [30, 30], maxZoom: 6 });
+  }
 }
 
 function renderMapMarkers() {
-  if (!mainMap || !markersLayer) return;
-  markersLayer.clearLayers();
-
-  state.destinations.forEach(dest => {
-    if (!dest.lat || !dest.lng) return;
-
-    const status = dest.status || 'idea';
-    const initial = dest.name[0].toUpperCase();
-
-    const icon = L.divIcon({
-      className: '',
-      html: `<div class="map-marker ${status}"><span>${initial}</span></div>`,
-      iconSize: [32, 32],
-      iconAnchor: [16, 32],
-      popupAnchor: [0, -32]
-    });
-
-    const marker = L.marker([dest.lat, dest.lng], { icon }).addTo(markersLayer);
-
-    let datesHtml = '';
-    if (dest.trips && dest.trips.length > 0) {
-      datesHtml = dest.trips.map(t =>
-        `<div class="popup-date">${formatDateShort(t.start)}${t.end ? ' → ' + formatDateShort(t.end) : ''}</div>`
-      ).join('');
-    }
-
-    marker.bindPopup(`
-      <div class="map-popup">
-        <div class="popup-name">${escapeHtml(dest.name)}</div>
-        <div class="popup-country">${getFlag(dest.countryCode)} ${escapeHtml(dest.country || '')}</div>
-        ${datesHtml}
-      </div>
-    `, { closeButton: false, maxWidth: 250 });
-
-    marker.on('click', () => showDetail(dest.id));
-  });
+  renderMapCountries();
 }
 
 function fitMapToMarkers() {
-  if (!mainMap || !markersLayer) return;
-  const bounds = markersLayer.getBounds();
-  if (bounds.isValid()) {
-    mainMap.fitBounds(bounds, { padding: [40, 40], maxZoom: 8 });
-  }
+  const countryMap = getCountryStatus();
+  fitMapToCountries(countryMap);
 }
 
 // ============================================
@@ -1389,7 +1508,7 @@ window.toggleUserMenu = toggleUserMenu;
 window.switchView = switchView;
 window.openAddModal = openAddModal;
 window.closeModal = closeModal;
-window.setFilter = setFilter;
+window.toggleFilter = toggleFilter;
 window.onSearch = onSearch;
 window.setMonthFilter = setMonthFilter;
 window.changePlanningYear = changePlanningYear;
