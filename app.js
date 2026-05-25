@@ -814,7 +814,11 @@ function renderList() {
     countries[c].dests.push(d);
   });
 
-  const sorted = Object.entries(countries).sort((a, b) => a[0].localeCompare(b[0]));
+  const sorted = Object.entries(countries).sort((a, b) => a[0].localeCompare(b[0], currentLang));
+  // Sort destinations within each country alphabetically
+  sorted.forEach(([, data]) => {
+    data.dests.sort((a, b) => (a.name || '').localeCompare(b.name || '', currentLang));
+  });
 
   // Stats
   const doneCt = filtered.filter(d => d.status === 'done').length;
