@@ -196,8 +196,24 @@ function checkAutoLogin() {
 // AUTH
 // ============================================
 
+async function hashPassword(password) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(password + '_mv_salt_2026');
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+function getLocalAccounts() {
+  const raw = localStorage.getItem('mv-accounts');
+  return raw ? JSON.parse(raw) : {};
+}
+
+function saveLocalAccounts(accounts) {
+  localStorage.setItem('mv-accounts', JSON.stringify(accounts));
+}
+
 async function loginUser() {
-  const email = document.getElementById('auth-email').value.trim();
+  const email = document.getElementById('auth-email').value.trim().toLowerCase();
   const password = document.getElementById('auth-password').value;
   if (!email || !password) return showToast('Veuillez remplir tous les champs');
 
@@ -213,14 +229,20 @@ async function loginUser() {
       showToast(getFirebaseError(err.code));
     }
   } else {
-    enterApp({ uid: 'local-' + Date.now(), email, name: email.split('@')[0] });
+    const accounts = getLocalAccounts();
+    const account = accounts[email];
+    if (!account) return showToast('Aucun compte avec cet email');
+    const hash = await hashPassword(password);
+    if (account.passwordHash !== hash) return showToast('Mot de passe incorrect');
+    enterApp({ uid: account.uid, email, name: account.name });
   }
 }
 
 async function registerUser() {
-  const email = document.getElementById('auth-email').value.trim();
+  const email = document.getElementById('auth-email').value.trim().toLowerCase();
   const password = document.getElementById('auth-password').value;
   if (!email || !password) return showToast('Veuillez remplir tous les champs');
+  if (password.length < 6) return showToast('Mot de passe : 6 caractères minimum');
 
   if (state.firebaseReady) {
     try {
@@ -234,7 +256,15 @@ async function registerUser() {
       showToast(getFirebaseError(err.code));
     }
   } else {
-    enterApp({ uid: 'local-' + Date.now(), email, name: email.split('@')[0] });
+    const accounts = getLocalAccounts();
+    if (accounts[email]) return showToast('Cet email est déjà utilisé');
+    const uid = 'local-' + Date.now();
+    const name = email.split('@')[0];
+    const passwordHash = await hashPassword(password);
+    accounts[email] = { uid, name, passwordHash };
+    saveLocalAccounts(accounts);
+    enterApp({ uid, email, name });
+    showToast('Compte créé !');
   }
 }
 
@@ -284,10 +314,19 @@ function logout() {
   if (state.firebaseReady) firebase.auth().signOut();
   state.user = null;
   state.destinations = [];
+  state.editingId = null;
+  state.detailId = null;
+  state.currentFilter = 'all';
+  state.currentMonth = null;
+  state.searchQuery = '';
   localStorage.removeItem('mv-user');
   document.getElementById('app').classList.add('hidden');
   document.getElementById('auth-screen').classList.remove('hidden');
   document.getElementById('user-menu').classList.add('hidden');
+  document.getElementById('auth-email').value = '';
+  document.getElementById('auth-password').value = '';
+  document.getElementById('search-input').value = '';
+  if (markersLayer) markersLayer.clearLayers();
 }
 
 function toggleUserMenu() {
@@ -325,7 +364,7 @@ function loadDestinations(loadDemo = false) {
         }
       });
   } else {
-    const saved = localStorage.getItem('mv-destinations');
+    const saved = localStorage.getItem(getStorageKey());
     state.destinations = saved ? JSON.parse(saved) : [];
     if (state.destinations.length === 0 || loadDemo) {
       injectDemoData();
@@ -381,8 +420,12 @@ function deleteDest(id) {
   }
 }
 
+function getStorageKey() {
+  return state.user ? 'mv-destinations-' + state.user.uid : 'mv-destinations';
+}
+
 function saveToStorage() {
-  localStorage.setItem('mv-destinations', JSON.stringify(state.destinations));
+  localStorage.setItem(getStorageKey(), JSON.stringify(state.destinations));
 }
 
 // ============================================
@@ -708,8 +751,14 @@ function renderPlanning() {
     });
   });
 
+  // Day number headers
+  let gridHtml = '<div class="planning-day-headers"><div class="planning-day-headers-spacer"></div><div class="planning-day-numbers">';
+  [1, 5, 10, 15, 20, 25, 31].forEach(d => {
+    gridHtml += `<span>${d}</span>`;
+  });
+  gridHtml += '</div></div>';
+
   // Render 12 month rows
-  let gridHtml = '';
   for (let m = 0; m < 12; m++) {
     const daysInMonth = new Date(year, m + 1, 0).getDate();
     const isCurrent = m === currentMonth;
@@ -727,12 +776,13 @@ function renderPlanning() {
       const width = Math.max(((blockEnd - blockStart + 1) / daysInMonth * 100), 3).toFixed(1);
       const status = t.dest.status || 'idea';
 
+      const dateLabel = `${blockStart}–${blockEnd}`;
       blocksHtml += `
         <div class="planning-trip-block ${status}"
              style="left:${left}%; width:${width}%"
              onclick="showDetail('${t.dest.id}')"
              title="${escapeHtml(t.dest.name)}: ${formatDateShort(t.trip.start)} → ${formatDateShort(t.trip.end || t.trip.start)}">
-          ${escapeHtml(t.dest.name)}
+          ${escapeHtml(t.dest.name)}<span class="planning-trip-dates">${dateLabel}</span>
         </div>
       `;
     });
@@ -746,7 +796,7 @@ function renderPlanning() {
 
     gridHtml += `
       <div class="planning-month-row">
-        <div class="planning-month-label${isCurrent ? ' current' : ''}">${MONTH_NAMES[m]}</div>
+        <div class="planning-month-label${isCurrent ? ' current' : ''}">${MONTH_FULL[m].substring(0, 3)}.</div>
         <div class="planning-days-bar">
           ${currentLine}
           ${blocksHtml}
