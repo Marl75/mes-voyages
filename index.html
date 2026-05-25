@@ -143,6 +143,14 @@
           <input type="text" id="dest-tags" placeholder="Ex: plage, culture, gastro">
         </div>
         <div class="form-group">
+          <label>Photo</label>
+          <div class="photo-input-row">
+            <input type="text" id="dest-photo" placeholder="URL de la photo ou recherche auto…" oninput="onPhotoUrlInput()">
+            <button type="button" class="photo-search-btn" onclick="searchPhoto()" title="Rechercher une photo">🔍</button>
+          </div>
+          <div id="photo-preview" class="photo-preview hidden"></div>
+        </div>
+        <div class="form-group">
           <label>Temps de vol (depuis Paris)</label>
           <input type="text" id="dest-flight" placeholder="Ex: 3h30">
         </div>

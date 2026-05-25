@@ -454,6 +454,24 @@ body {
 .suggestion-item:last-child { border-bottom: none; }
 .form-group { position: relative; }
 
+.photo-input-row {
+  display: flex; gap: 6px; align-items: center;
+}
+.photo-input-row input { flex: 1; }
+.photo-search-btn {
+  width: 38px; height: 38px; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); background: var(--bg);
+  cursor: pointer; font-size: 0.9rem; flex-shrink: 0;
+  transition: background 0.15s;
+}
+.photo-search-btn:hover { background: var(--bg-secondary); }
+.photo-preview {
+  margin-top: 8px; height: 120px; border-radius: var(--radius);
+  background-size: cover; background-position: center;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border);
+}
+
 /* ============ DETAIL MODAL ============ */
 .detail-modal { max-height: 85vh; }
 .detail-photo {

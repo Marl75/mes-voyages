@@ -839,6 +839,8 @@ function openAddModal() {
   document.getElementById('dest-tags').value = '';
   document.getElementById('dest-flight').value = '';
   document.getElementById('dest-best-months').value = '';
+  document.getElementById('dest-photo').value = '';
+  document.getElementById('photo-preview').classList.add('hidden');
   document.getElementById('date-rows').innerHTML = '';
   document.getElementById('geocode-suggestions').classList.add('hidden');
   document.getElementById('modal-delete-btn').classList.add('hidden');
@@ -867,6 +869,8 @@ function openEditModal(dest) {
   document.getElementById('dest-tags').value = (dest.tags || []).join(', ');
   document.getElementById('dest-flight').value = dest.flightTime || '';
   document.getElementById('dest-best-months').value = dest.bestMonths || '';
+  document.getElementById('dest-photo').value = dest.photoUrl || '';
+  updatePhotoPreview(dest.photoUrl || '');
   document.getElementById('geocode-suggestions').classList.add('hidden');
   document.getElementById('modal-delete-btn').classList.remove('hidden');
 
@@ -920,7 +924,7 @@ async function saveDestination() {
   let lng = state._editLng || 0;
   let country = document.getElementById('dest-country').value.trim();
   let countryCode = state._editCountryCode || '';
-  let photoUrl = state._editPhotoUrl || '';
+  let photoUrl = document.getElementById('dest-photo').value.trim() || state._editPhotoUrl || '';
 
   // Auto-geocode if no coordinates
   if (!lat || !lng) {
@@ -1062,6 +1066,73 @@ async function fetchCountryCode(lat, lon) {
       state._editCountryCode = data.address.country_code;
     }
   } catch (e) { /* ignore */ }
+}
+
+// ============================================
+// PHOTO SEARCH
+// ============================================
+
+function onPhotoUrlInput() {
+  const url = document.getElementById('dest-photo').value.trim();
+  updatePhotoPreview(url);
+  if (url) state._editPhotoUrl = url;
+}
+
+function updatePhotoPreview(url) {
+  const preview = document.getElementById('photo-preview');
+  if (url) {
+    preview.style.backgroundImage = `url('${url}')`;
+    preview.classList.remove('hidden');
+  } else {
+    preview.classList.add('hidden');
+  }
+}
+
+function isSceneryPhoto(url) {
+  if (!url) return false;
+  const lower = url.toLowerCase();
+  const rejects = ['flag', 'coat', 'blason', 'drapeau', 'banner', 'logo', 'emblem', 'escudo', 'wappen', 'arms_of', 'seal_of', 'icon', '.svg'];
+  return !rejects.some(r => lower.includes(r));
+}
+
+async function fetchWikiPhoto(lang, query) {
+  try {
+    const res = await fetch(`https://${lang}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query)}`);
+    if (!res.ok) return null;
+    const data = await res.json();
+    const url = data.originalimage?.source || data.thumbnail?.source?.replace(/\/\d+px-/, '/800px-');
+    return (url && isSceneryPhoto(url)) ? url : null;
+  } catch { return null; }
+}
+
+async function searchPhoto() {
+  const name = document.getElementById('dest-name').value.trim();
+  if (!name) return showToast('Entrez d\'abord un nom de destination');
+
+  const btn = document.querySelector('.photo-search-btn');
+  btn.textContent = '⏳';
+
+  try {
+    let photoUrl =
+      await fetchWikiPhoto('en', name) ||
+      await fetchWikiPhoto('fr', name) ||
+      await fetchWikiPhoto('en', name + ' city') ||
+      await fetchWikiPhoto('fr', name + ' (ville)');
+
+    if (photoUrl) {
+      state._editPhotoUrl = photoUrl;
+      document.getElementById('dest-photo').value = photoUrl;
+      updatePhotoPreview(photoUrl);
+      showToast('Photo trouvée !');
+    } else {
+      showToast('Aucune photo trouvée — collez une URL manuellement');
+    }
+  } catch (err) {
+    console.warn('Photo search error:', err);
+    showToast('Erreur de recherche');
+  } finally {
+    btn.textContent = '🔍';
+  }
 }
 
 // ============================================
@@ -1247,6 +1318,8 @@ window.changePlanningYear = changePlanningYear;
 window.onDestNameInput = onDestNameInput;
 window.selectGeoSuggestion = selectGeoSuggestion;
 window.setStatus = setStatus;
+window.searchPhoto = searchPhoto;
+window.onPhotoUrlInput = onPhotoUrlInput;
 window.addDateRow = addDateRow;
 window.saveDestination = saveDestination;
 window.deleteDestination = deleteDestination;
