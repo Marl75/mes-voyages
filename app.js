@@ -18,8 +18,143 @@ const FIREBASE_CONFIG = {
 
 const NOMINATIM_URL = 'https://nominatim.openstreetmap.org';
 
-const MONTH_NAMES = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
-const MONTH_FULL = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+// ============================================
+// INTERNATIONALIZATION
+// ============================================
+
+const I18N = {
+  fr: {
+    appTitle: 'Mes Voyages', appSubtitle: 'Planifiez vos prochaines aventures',
+    emailPh: 'Email', passwordPh: 'Mot de passe',
+    login: 'Se connecter', register: 'Créer un compte', or: 'ou',
+    googleLogin: 'Continuer avec Google', demoMode: 'Explorer en mode démo',
+    logout: 'Se déconnecter', langSwitch: 'English',
+    searchPh: 'Rechercher…',
+    filterAll: 'Tous', filterDone: 'Visités', filterPlanned: 'Planifiés', filterIdea: 'Idées',
+    navMap: 'Carte', navList: 'Liste', navPlanning: 'Planning',
+    newDest: 'Nouvelle destination', editTitle: 'Modifier',
+    labelDest: 'Destination', labelCountry: 'Pays', labelStatus: 'Statut',
+    labelNotes: 'Notes', labelTags: 'Tags', labelPhoto: 'Photo',
+    labelTravelTime: 'Temps de trajet', labelBestMonths: 'Meilleurs mois', labelDates: 'Dates de voyage',
+    destPh: 'Ex: Santorini', countryPh: 'Auto-détecté…', notesPh: 'Vos notes…',
+    tagsPh: 'Ex: plage, culture, gastro', photoPh: 'URL de la photo ou recherche auto…',
+    travelTimePh: 'Ex: 3h30', bestMonthsPh: 'Ex: avr–oct',
+    statusIdea: '💡 Idée', statusPlanned: '📅 Planifié', statusDone: '✅ Visité',
+    addDates: '+ Ajouter des dates', btnDelete: 'Supprimer', save: 'Enregistrer',
+    edit: 'Modifier', cancel: 'Annuler',
+    destinations: 'destinations', destination: 'destination', countries: 'pays',
+    visited: 'visité', visitedP: 'visités', planned: 'planifié', plannedP: 'planifiés',
+    noDestinations: 'Aucune destination.<br>Ajoutez votre première !', noResults: 'Aucun résultat.',
+    statusLabelDone: 'Visité', statusLabelPlanned: 'Planifié', statusLabelIdea: 'Idée',
+    detailTravel: '✈ Trajet', detailBestMonths: '☀ Meilleurs mois',
+    upcoming: 'À venir', past: 'Passé', day: 'jour', days: 'jours',
+    confirmDelete: 'Supprimer « {name} » ?',
+    toastAccountCreated: 'Compte créé !', toastEnterName: 'Entrez un nom de destination',
+    toastEnterNameFirst: "Entrez d'abord un nom de destination",
+    toastModified: 'Destination modifiée', toastAdded: 'Destination ajoutée !',
+    toastDeleted: 'Destination supprimée', toastPhotoFound: 'Photo trouvée !',
+    toastNoPhoto: 'Aucune photo trouvée — collez une URL manuellement',
+    toastSearchError: 'Erreur de recherche',
+    toastMigrated: '{n} destination(s) récupérée(s) !', toastMigrationError: 'Erreur lors de la migration des données',
+    errEmailAndPwd: 'Veuillez saisir votre email et mot de passe.',
+    errEmail: 'Veuillez saisir votre email.', errPwd: 'Veuillez saisir votre mot de passe.',
+    errEmailAndPwdReg: 'Veuillez saisir un email et un mot de passe.',
+    errPwdReg: 'Veuillez choisir un mot de passe.',
+    errPwdLength: 'Le mot de passe doit contenir au moins 6 caractères.',
+    errNoAccount: 'Aucun compte avec cet email. Cliquez « Créer un compte » pour vous inscrire.',
+    errWrongPwd: 'Mot de passe incorrect.',
+    errAccountExists: 'Un compte existe déjà avec cet email. Cliquez « Se connecter ».',
+    errInvalidCred: 'Email ou mot de passe incorrect.',
+    errInvalidEmail: "L'adresse email n'est pas valide.",
+    errTooMany: 'Trop de tentatives. Veuillez réessayer dans quelques minutes.',
+    errPopupClosed: 'Connexion annulée.', errConnection: 'Erreur de connexion. Veuillez réessayer.',
+    monthNames: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'],
+    monthFull: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
+    locale: 'fr-FR'
+  },
+  en: {
+    appTitle: 'My Trips', appSubtitle: 'Plan your next adventures',
+    emailPh: 'Email', passwordPh: 'Password',
+    login: 'Log in', register: 'Create account', or: 'or',
+    googleLogin: 'Continue with Google', demoMode: 'Explore in demo mode',
+    logout: 'Log out', langSwitch: 'Français',
+    searchPh: 'Search…',
+    filterAll: 'All', filterDone: 'Visited', filterPlanned: 'Planned', filterIdea: 'Ideas',
+    navMap: 'Map', navList: 'List', navPlanning: 'Timeline',
+    newDest: 'New destination', editTitle: 'Edit',
+    labelDest: 'Destination', labelCountry: 'Country', labelStatus: 'Status',
+    labelNotes: 'Notes', labelTags: 'Tags', labelPhoto: 'Photo',
+    labelTravelTime: 'Travel time', labelBestMonths: 'Best months', labelDates: 'Travel dates',
+    destPh: 'e.g. Santorini', countryPh: 'Auto-detected…', notesPh: 'Your notes…',
+    tagsPh: 'e.g. beach, culture, food', photoPh: 'Photo URL or auto search…',
+    travelTimePh: 'e.g. 3h30', bestMonthsPh: 'e.g. Apr–Oct',
+    statusIdea: '💡 Idea', statusPlanned: '📅 Planned', statusDone: '✅ Visited',
+    addDates: '+ Add dates', btnDelete: 'Delete', save: 'Save',
+    edit: 'Edit', cancel: 'Cancel',
+    destinations: 'destinations', destination: 'destination', countries: 'countries',
+    visited: 'visited', visitedP: 'visited', planned: 'planned', plannedP: 'planned',
+    noDestinations: 'No destinations yet.<br>Add your first one!', noResults: 'No results.',
+    statusLabelDone: 'Visited', statusLabelPlanned: 'Planned', statusLabelIdea: 'Idea',
+    detailTravel: '✈ Travel time', detailBestMonths: '☀ Best months',
+    upcoming: 'Upcoming', past: 'Past', day: 'day', days: 'days',
+    confirmDelete: 'Delete "{name}"?',
+    toastAccountCreated: 'Account created!', toastEnterName: 'Enter a destination name',
+    toastEnterNameFirst: 'Enter a destination name first',
+    toastModified: 'Destination updated', toastAdded: 'Destination added!',
+    toastDeleted: 'Destination deleted', toastPhotoFound: 'Photo found!',
+    toastNoPhoto: 'No photo found — paste a URL manually',
+    toastSearchError: 'Search error',
+    toastMigrated: '{n} destination(s) recovered!', toastMigrationError: 'Error migrating data',
+    errEmailAndPwd: 'Please enter your email and password.',
+    errEmail: 'Please enter your email.', errPwd: 'Please enter your password.',
+    errEmailAndPwdReg: 'Please enter an email and password.',
+    errPwdReg: 'Please choose a password.',
+    errPwdLength: 'Password must be at least 6 characters.',
+    errNoAccount: 'No account with this email. Click "Create account" to register.',
+    errWrongPwd: 'Incorrect password.',
+    errAccountExists: 'An account already exists with this email. Click "Log in".',
+    errInvalidCred: 'Incorrect email or password.',
+    errInvalidEmail: 'Invalid email address.',
+    errTooMany: 'Too many attempts. Please try again in a few minutes.',
+    errPopupClosed: 'Login cancelled.', errConnection: 'Connection error. Please try again.',
+    monthNames: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    monthFull: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+    locale: 'en-US'
+  }
+};
+
+let currentLang = localStorage.getItem('mv-lang') || 'fr';
+
+function t(key, params) {
+  const str = I18N[currentLang]?.[key] || I18N.fr[key] || key;
+  if (!params) return str;
+  return Object.entries(params).reduce((s, [k, v]) => s.replace(`{${k}}`, v), str);
+}
+
+function getMonthNames() { return I18N[currentLang].monthNames; }
+function getMonthFull() { return I18N[currentLang].monthFull; }
+function getLocale() { return I18N[currentLang].locale; }
+
+function applyTranslations() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    el.textContent = t(el.getAttribute('data-i18n'));
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+    el.placeholder = t(el.getAttribute('data-i18n-ph'));
+  });
+  const langBtn = document.getElementById('lang-switch-btn');
+  if (langBtn) langBtn.textContent = t('langSwitch');
+  document.documentElement.lang = currentLang === 'fr' ? 'fr' : 'en';
+}
+
+function toggleLanguage() {
+  currentLang = currentLang === 'fr' ? 'en' : 'fr';
+  localStorage.setItem('mv-lang', currentLang);
+  applyTranslations();
+  renderMonthBar();
+  if (state.user) renderAll();
+  document.getElementById('user-menu').classList.add('hidden');
+}
 
 const DEMO_DESTINATIONS = [
   {
@@ -131,6 +266,7 @@ let confirmCallback = null;
 // ============================================
 
 document.addEventListener('DOMContentLoaded', () => {
+  applyTranslations();
   initFirebase();
   checkAutoLogin();
   renderMonthBar();
@@ -218,9 +354,9 @@ async function loginUser() {
   const email = document.getElementById('auth-email').value.trim().toLowerCase();
   const password = document.getElementById('auth-password').value;
 
-  if (!email && !password) return showAuthError('Veuillez saisir votre email et mot de passe.', ['auth-email', 'auth-password']);
-  if (!email) return showAuthError('Veuillez saisir votre email.', ['auth-email']);
-  if (!password) return showAuthError('Veuillez saisir votre mot de passe.', ['auth-password']);
+  if (!email && !password) return showAuthError(t('errEmailAndPwd'), ['auth-email', 'auth-password']);
+  if (!email) return showAuthError(t('errEmail'), ['auth-email']);
+  if (!password) return showAuthError(t('errPwd'), ['auth-password']);
 
   if (state.firebaseReady) {
     try {
@@ -237,9 +373,9 @@ async function loginUser() {
   } else {
     const accounts = getLocalAccounts();
     const account = accounts[email];
-    if (!account) return showAuthError('Aucun compte avec cet email. Cliquez « Créer un compte » pour vous inscrire.', ['auth-email']);
+    if (!account) return showAuthError(t('errNoAccount'), ['auth-email']);
     const hash = await hashPassword(password);
-    if (account.passwordHash !== hash) return showAuthError('Mot de passe incorrect.', ['auth-password']);
+    if (account.passwordHash !== hash) return showAuthError(t('errWrongPwd'), ['auth-password']);
     enterApp({ uid: account.uid, email, name: account.name });
   }
 }
@@ -249,10 +385,10 @@ async function registerUser() {
   const email = document.getElementById('auth-email').value.trim().toLowerCase();
   const password = document.getElementById('auth-password').value;
 
-  if (!email && !password) return showAuthError('Veuillez saisir un email et un mot de passe.', ['auth-email', 'auth-password']);
-  if (!email) return showAuthError('Veuillez saisir votre email.', ['auth-email']);
-  if (!password) return showAuthError('Veuillez choisir un mot de passe.', ['auth-password']);
-  if (password.length < 6) return showAuthError('Le mot de passe doit contenir au moins 6 caractères.', ['auth-password']);
+  if (!email && !password) return showAuthError(t('errEmailAndPwdReg'), ['auth-email', 'auth-password']);
+  if (!email) return showAuthError(t('errEmail'), ['auth-email']);
+  if (!password) return showAuthError(t('errPwdReg'), ['auth-password']);
+  if (password.length < 6) return showAuthError(t('errPwdLength'), ['auth-password']);
 
   if (state.firebaseReady) {
     try {
@@ -268,14 +404,14 @@ async function registerUser() {
     }
   } else {
     const accounts = getLocalAccounts();
-    if (accounts[email]) return showAuthError('Un compte existe déjà avec cet email. Cliquez « Se connecter ».', ['auth-email']);
+    if (accounts[email]) return showAuthError(t('errAccountExists'), ['auth-email']);
     const uid = 'local-' + Date.now();
     const name = email.split('@')[0];
     const passwordHash = await hashPassword(password);
     accounts[email] = { uid, name, passwordHash };
     saveLocalAccounts(accounts);
     enterApp({ uid, email, name });
-    showToast('Compte créé !');
+    showToast(t('toastAccountCreated'));
   }
 }
 
@@ -373,16 +509,16 @@ function clearAuthError() {
 
 function getFirebaseError(code) {
   const errors = {
-    'auth/user-not-found': { msg: 'Aucun compte avec cet email. Cliquez « Créer un compte » pour vous inscrire.', fields: ['auth-email'] },
-    'auth/wrong-password': { msg: 'Mot de passe incorrect.', fields: ['auth-password'] },
-    'auth/invalid-credential': { msg: 'Email ou mot de passe incorrect.', fields: ['auth-email', 'auth-password'] },
-    'auth/email-already-in-use': { msg: 'Un compte existe déjà avec cet email. Cliquez « Se connecter ».', fields: ['auth-email'] },
-    'auth/weak-password': { msg: 'Le mot de passe doit contenir au moins 6 caractères.', fields: ['auth-password'] },
-    'auth/invalid-email': { msg: 'L\'adresse email n\'est pas valide.', fields: ['auth-email'] },
-    'auth/too-many-requests': { msg: 'Trop de tentatives. Veuillez réessayer dans quelques minutes.', fields: [] },
-    'auth/popup-closed-by-user': { msg: 'Connexion annulée.', fields: [] }
+    'auth/user-not-found': { msg: t('errNoAccount'), fields: ['auth-email'] },
+    'auth/wrong-password': { msg: t('errWrongPwd'), fields: ['auth-password'] },
+    'auth/invalid-credential': { msg: t('errInvalidCred'), fields: ['auth-email', 'auth-password'] },
+    'auth/email-already-in-use': { msg: t('errAccountExists'), fields: ['auth-email'] },
+    'auth/weak-password': { msg: t('errPwdLength'), fields: ['auth-password'] },
+    'auth/invalid-email': { msg: t('errInvalidEmail'), fields: ['auth-email'] },
+    'auth/too-many-requests': { msg: t('errTooMany'), fields: [] },
+    'auth/popup-closed-by-user': { msg: t('errPopupClosed'), fields: [] }
   };
-  return errors[code] || { msg: 'Erreur de connexion. Veuillez réessayer.', fields: [] };
+  return errors[code] || { msg: t('errConnection'), fields: [] };
 }
 
 // ============================================
@@ -444,10 +580,10 @@ function migrateLocalData() {
   });
 
   batch.commit().then(() => {
-    showToast(`${localDests.length} destination(s) récupérée(s) !`);
+    showToast(t('toastMigrated', { n: localDests.length }));
   }).catch(err => {
     console.warn('Migration error:', err);
-    showToast('Erreur lors de la migration des données');
+    showToast(t('toastMigrationError'));
   });
 
   return true;
@@ -627,7 +763,7 @@ function getFilteredDestinations() {
 function renderMonthBar() {
   const bar = document.getElementById('month-bar');
   const now = new Date();
-  bar.innerHTML = MONTH_NAMES.map((name, i) => {
+  bar.innerHTML = getMonthNames().map((name, i) => {
     const isCurrent = i === now.getMonth();
     return `<button class="month-btn${isCurrent ? ' current' : ''}" data-month="${i}" onclick="setMonthFilter(${i})">${name}</button>`;
   }).join('');
@@ -664,7 +800,7 @@ function renderList() {
     container.innerHTML = `
       <div class="list-empty">
         <div class="list-empty-icon">🌍</div>
-        <p>${state.destinations.length === 0 ? 'Aucune destination.<br>Ajoutez votre première !' : 'Aucun résultat.'}</p>
+        <p>${state.destinations.length === 0 ? t('noDestinations') : t('noResults')}</p>
       </div>
     `;
     return;
@@ -687,10 +823,10 @@ function renderList() {
 
   let html = `
     <div class="list-stats">
-      <span><strong>${filtered.length}</strong> destination${filtered.length > 1 ? 's' : ''}</span>
-      <span><strong>${countryCt}</strong> pays</span>
-      <span><strong>${doneCt}</strong> visité${doneCt > 1 ? 's' : ''}</span>
-      <span><strong>${plannedCt}</strong> planifié${plannedCt > 1 ? 's' : ''}</span>
+      <span><strong>${filtered.length}</strong> ${filtered.length > 1 ? t('destinations') : t('destination')}</span>
+      <span><strong>${countryCt}</strong> ${t('countries')}</span>
+      <span><strong>${doneCt}</strong> ${doneCt > 1 ? t('visitedP') : t('visited')}</span>
+      <span><strong>${plannedCt}</strong> ${plannedCt > 1 ? t('plannedP') : t('planned')}</span>
     </div>
   `;
 
@@ -734,8 +870,8 @@ function renderDestRow(d) {
       `;
     }
   } else {
-    const labels = { done: 'Visité', planned: 'Planifié', idea: 'Idée' };
-    dateHtml = `<div class="dest-date none">${labels[status] || 'Idée'}</div>`;
+    const labels = { done: t('statusLabelDone'), planned: t('statusLabelPlanned'), idea: t('statusLabelIdea') };
+    dateHtml = `<div class="dest-date none">${labels[status] || t('statusLabelIdea')}</div>`;
   }
 
   return `
@@ -991,7 +1127,7 @@ function renderPlanning() {
 
     gridHtml += `
       <div class="planning-month-row">
-        <div class="planning-month-label${isCurrent ? ' current' : ''}">${MONTH_FULL[m].substring(0, 3)}.</div>
+        <div class="planning-month-label${isCurrent ? ' current' : ''}">${getMonthFull()[m].substring(0, 3)}.</div>
         <div class="planning-days-bar">
           ${currentLine}
           ${blocksHtml}
@@ -1028,7 +1164,7 @@ function openAddModal() {
   state._editCountryCode = null;
   state._editPhotoUrl = null;
 
-  document.getElementById('modal-title').textContent = 'Nouvelle destination';
+  document.getElementById('modal-title').textContent = t('newDest');
   document.getElementById('dest-name').value = '';
   document.getElementById('dest-country').value = '';
   document.getElementById('dest-notes').value = '';
@@ -1058,7 +1194,7 @@ function openEditModal(dest) {
   state._editCountryCode = dest.countryCode;
   state._editPhotoUrl = dest.photoUrl;
 
-  document.getElementById('modal-title').textContent = 'Modifier';
+  document.getElementById('modal-title').textContent = t('editTitle');
   document.getElementById('dest-name').value = dest.name || '';
   document.getElementById('dest-country').value = dest.country || '';
   document.getElementById('dest-notes').value = dest.notes || '';
@@ -1114,7 +1250,7 @@ function addDateRow(startVal, endVal) {
 
 async function saveDestination() {
   const name = document.getElementById('dest-name').value.trim();
-  if (!name) return showToast('Entrez un nom de destination');
+  if (!name) return showToast(t('toastEnterName'));
 
   let lat = state._editLat || 0;
   let lng = state._editLng || 0;
@@ -1162,7 +1298,7 @@ async function saveDestination() {
 
   await saveDest(dest);
   closeModal();
-  showToast(state.editingId ? 'Destination modifiée' : 'Destination ajoutée !');
+  showToast(state.editingId ? t('toastModified') : t('toastAdded'));
 }
 
 function deleteDestination() {
@@ -1170,11 +1306,11 @@ function deleteDestination() {
   const dest = state.destinations.find(d => d.id === state.editingId);
   const name = dest ? dest.name : 'cette destination';
 
-  showConfirm(`Supprimer « ${name} » ?`, async () => {
+  showConfirm(t('confirmDelete', { name }), async () => {
     await deleteDest(state.editingId);
     closeModal();
     closeDetail();
-    showToast('Destination supprimée');
+    showToast(t('toastDeleted'));
   });
 }
 
@@ -1303,7 +1439,7 @@ async function fetchWikiPhoto(lang, query) {
 
 async function searchPhoto() {
   const name = document.getElementById('dest-name').value.trim();
-  if (!name) return showToast('Entrez d\'abord un nom de destination');
+  if (!name) return showToast(t('toastEnterNameFirst'));
 
   const btn = document.querySelector('.photo-search-btn');
   btn.textContent = '⏳';
@@ -1319,13 +1455,13 @@ async function searchPhoto() {
       state._editPhotoUrl = photoUrl;
       document.getElementById('dest-photo').value = photoUrl;
       updatePhotoPreview(photoUrl);
-      showToast('Photo trouvée !');
+      showToast(t('toastPhotoFound'));
     } else {
-      showToast('Aucune photo trouvée — collez une URL manuellement');
+      showToast(t('toastNoPhoto'));
     }
   } catch (err) {
     console.warn('Photo search error:', err);
-    showToast('Erreur de recherche');
+    showToast(t('toastSearchError'));
   } finally {
     btn.textContent = '🔍';
   }
@@ -1350,7 +1486,7 @@ function showDetail(id) {
 
   // Body content
   const status = dest.status || 'idea';
-  const statusLabels = { done: '✅ Visité', planned: '📅 Planifié', idea: '💡 Idée' };
+  const statusLabels = { done: t('statusDone'), planned: t('statusPlanned'), idea: t('statusIdea') };
 
   const tagsHtml = (dest.tags || []).map(t =>
     `<span class="detail-tag">${escapeHtml(t)}</span>`
@@ -1358,10 +1494,10 @@ function showDetail(id) {
 
   let infoRows = '';
   if (dest.flightTime) {
-    infoRows += `<div class="detail-info-row"><span class="detail-info-label">✈ Vol</span><span class="detail-info-value">${escapeHtml(dest.flightTime)}</span></div>`;
+    infoRows += `<div class="detail-info-row"><span class="detail-info-label">${t('detailTravel')}</span><span class="detail-info-value">${escapeHtml(dest.flightTime)}</span></div>`;
   }
   if (dest.bestMonths) {
-    infoRows += `<div class="detail-info-row"><span class="detail-info-label">☀ Meilleurs mois</span><span class="detail-info-value">${escapeHtml(dest.bestMonths)}</span></div>`;
+    infoRows += `<div class="detail-info-row"><span class="detail-info-label">${t('detailBestMonths')}</span><span class="detail-info-value">${escapeHtml(dest.bestMonths)}</span></div>`;
   }
 
   let datesHtml = '';
@@ -1374,8 +1510,8 @@ function showDetail(id) {
       const days = getDaysBetween(t.start, t.end || t.start);
       return `
         <div class="detail-info-row">
-          <span class="detail-info-label">📅 ${isFuture ? 'À venir' : 'Passé'}</span>
-          <span class="detail-info-value">${start}${end}<br><small style="color:var(--text-muted);font-weight:400">${days} jour${days > 1 ? 's' : ''}</small></span>
+          <span class="detail-info-label">📅 ${isFuture ? t('upcoming') : t('past')}</span>
+          <span class="detail-info-value">${start}${end}<br><small style="color:var(--text-muted);font-weight:400">${days} ${days > 1 ? t('days') : t('day')}</small></span>
         </div>
       `;
     }).join('');
@@ -1470,13 +1606,13 @@ function getFlag(countryCode) {
 function formatDateShort(dateStr) {
   if (!dateStr) return '';
   const d = new Date(dateStr + 'T00:00:00');
-  return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+  return d.toLocaleDateString(getLocale(), { day: 'numeric', month: 'short' });
 }
 
 function formatDateLong(dateStr) {
   if (!dateStr) return '';
   const d = new Date(dateStr + 'T00:00:00');
-  return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+  return d.toLocaleDateString(getLocale(), { day: 'numeric', month: 'long', year: 'numeric' });
 }
 
 function getDaysBetween(start, end) {
@@ -1525,3 +1661,4 @@ window.closeDetail = closeDetail;
 window.editFromDetail = editFromDetail;
 window.confirmOk = confirmOk;
 window.confirmCancel = confirmCancel;
+window.toggleLanguage = toggleLanguage;

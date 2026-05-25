@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mes-voyages-v14';
+const CACHE_NAME = 'mes-voyages-v15';
 const STATIC_ASSETS = [
   './',
   './index.html',
