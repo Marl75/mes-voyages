@@ -19,8 +19,9 @@
       <h1 class="auth-title">Mes Voyages</h1>
       <p class="auth-subtitle">Planifiez vos prochaines aventures</p>
       <div class="auth-form">
-        <input type="email" id="auth-email" placeholder="Email" class="auth-input" autocomplete="email">
-        <input type="password" id="auth-password" placeholder="Mot de passe" class="auth-input" autocomplete="current-password">
+        <input type="email" id="auth-email" placeholder="Email" class="auth-input" autocomplete="email" oninput="clearAuthError()">
+        <input type="password" id="auth-password" placeholder="Mot de passe" class="auth-input" autocomplete="current-password" oninput="clearAuthError()">
+        <div id="auth-error" class="auth-error hidden"></div>
         <button class="auth-btn primary" onclick="loginUser()">Se connecter</button>
         <button class="auth-btn secondary" onclick="registerUser()">Créer un compte</button>
         <div class="auth-divider"><span>ou</span></div>

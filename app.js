@@ -212,9 +212,13 @@ function saveLocalAccounts(accounts) {
 }
 
 async function loginUser() {
+  clearAuthError();
   const email = document.getElementById('auth-email').value.trim().toLowerCase();
   const password = document.getElementById('auth-password').value;
-  if (!email || !password) return showToast('Veuillez remplir tous les champs');
+
+  if (!email && !password) return showAuthError('Veuillez saisir votre email et mot de passe.', ['auth-email', 'auth-password']);
+  if (!email) return showAuthError('Veuillez saisir votre email.', ['auth-email']);
+  if (!password) return showAuthError('Veuillez saisir votre mot de passe.', ['auth-password']);
 
   if (state.firebaseReady) {
     try {
@@ -225,23 +229,28 @@ async function loginUser() {
         name: cred.user.displayName || email.split('@')[0]
       });
     } catch (err) {
-      showToast(getFirebaseError(err.code));
+      const e = getFirebaseError(err.code);
+      showAuthError(e.msg, e.fields);
     }
   } else {
     const accounts = getLocalAccounts();
     const account = accounts[email];
-    if (!account) return showToast('Aucun compte avec cet email');
+    if (!account) return showAuthError('Aucun compte avec cet email. Cliquez « Créer un compte » pour vous inscrire.', ['auth-email']);
     const hash = await hashPassword(password);
-    if (account.passwordHash !== hash) return showToast('Mot de passe incorrect');
+    if (account.passwordHash !== hash) return showAuthError('Mot de passe incorrect.', ['auth-password']);
     enterApp({ uid: account.uid, email, name: account.name });
   }
 }
 
 async function registerUser() {
+  clearAuthError();
   const email = document.getElementById('auth-email').value.trim().toLowerCase();
   const password = document.getElementById('auth-password').value;
-  if (!email || !password) return showToast('Veuillez remplir tous les champs');
-  if (password.length < 6) return showToast('Mot de passe : 6 caractères minimum');
+
+  if (!email && !password) return showAuthError('Veuillez saisir un email et un mot de passe.', ['auth-email', 'auth-password']);
+  if (!email) return showAuthError('Veuillez saisir votre email.', ['auth-email']);
+  if (!password) return showAuthError('Veuillez choisir un mot de passe.', ['auth-password']);
+  if (password.length < 6) return showAuthError('Le mot de passe doit contenir au moins 6 caractères.', ['auth-password']);
 
   if (state.firebaseReady) {
     try {
@@ -252,11 +261,12 @@ async function registerUser() {
         name: email.split('@')[0]
       });
     } catch (err) {
-      showToast(getFirebaseError(err.code));
+      const e = getFirebaseError(err.code);
+      showAuthError(e.msg, e.fields);
     }
   } else {
     const accounts = getLocalAccounts();
-    if (accounts[email]) return showToast('Cet email est déjà utilisé');
+    if (accounts[email]) return showAuthError('Un compte existe déjà avec cet email. Cliquez « Se connecter ».', ['auth-email']);
     const uid = 'local-' + Date.now();
     const name = email.split('@')[0];
     const passwordHash = await hashPassword(password);
@@ -268,6 +278,7 @@ async function registerUser() {
 }
 
 async function loginGoogle() {
+  clearAuthError();
   if (state.firebaseReady) {
     try {
       const provider = new firebase.auth.GoogleAuthProvider();
@@ -278,7 +289,8 @@ async function loginGoogle() {
         name: cred.user.displayName || cred.user.email.split('@')[0]
       });
     } catch (err) {
-      showToast(getFirebaseError(err.code));
+      const e = getFirebaseError(err.code);
+      showAuthError(e.msg, e.fields);
     }
   } else {
     enterApp({ uid: 'local-google-' + Date.now(), email: 'demo@mesvoyages.app', name: 'Voyageur' });
@@ -333,16 +345,41 @@ function toggleUserMenu() {
   menu.classList.toggle('hidden');
 }
 
+function showAuthError(message, highlightFields) {
+  const el = document.getElementById('auth-error');
+  el.textContent = message;
+  el.classList.remove('hidden');
+
+  if (highlightFields) {
+    highlightFields.forEach(id => {
+      document.getElementById(id)?.classList.add('error');
+    });
+  }
+
+  const form = document.querySelector('.auth-form');
+  form.classList.remove('shake');
+  void form.offsetWidth;
+  form.classList.add('shake');
+}
+
+function clearAuthError() {
+  document.getElementById('auth-error').classList.add('hidden');
+  document.getElementById('auth-email').classList.remove('error');
+  document.getElementById('auth-password').classList.remove('error');
+}
+
 function getFirebaseError(code) {
   const errors = {
-    'auth/user-not-found': 'Aucun compte avec cet email',
-    'auth/wrong-password': 'Mot de passe incorrect',
-    'auth/email-already-in-use': 'Cet email est déjà utilisé',
-    'auth/weak-password': 'Mot de passe : 6 caractères minimum',
-    'auth/invalid-email': 'Email invalide',
-    'auth/popup-closed-by-user': 'Connexion annulée'
+    'auth/user-not-found': { msg: 'Aucun compte avec cet email. Cliquez « Créer un compte » pour vous inscrire.', fields: ['auth-email'] },
+    'auth/wrong-password': { msg: 'Mot de passe incorrect.', fields: ['auth-password'] },
+    'auth/invalid-credential': { msg: 'Email ou mot de passe incorrect.', fields: ['auth-email', 'auth-password'] },
+    'auth/email-already-in-use': { msg: 'Un compte existe déjà avec cet email. Cliquez « Se connecter ».', fields: ['auth-email'] },
+    'auth/weak-password': { msg: 'Le mot de passe doit contenir au moins 6 caractères.', fields: ['auth-password'] },
+    'auth/invalid-email': { msg: 'L\'adresse email n\'est pas valide.', fields: ['auth-email'] },
+    'auth/too-many-requests': { msg: 'Trop de tentatives. Veuillez réessayer dans quelques minutes.', fields: [] },
+    'auth/popup-closed-by-user': { msg: 'Connexion annulée.', fields: [] }
   };
-  return errors[code] || 'Erreur de connexion';
+  return errors[code] || { msg: 'Erreur de connexion. Veuillez réessayer.', fields: [] };
 }
 
 // ============================================
@@ -1342,6 +1379,7 @@ function unsplashUrl(url, size) {
 }
 
 // Expose functions globally for HTML onclick handlers
+window.clearAuthError = clearAuthError;
 window.loginUser = loginUser;
 window.registerUser = registerUser;
 window.loginGoogle = loginGoogle;
