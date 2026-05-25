@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mes Voyages - Variantes Lignes Pures</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0A0A0C; color: #fff;
+      padding: 40px 16px 80px;
+    }
+    h1 { text-align: center; font-size: 1.3rem; font-weight: 800; margin-bottom: 6px; letter-spacing: -0.03em; }
+    .subtitle { text-align: center; color: #666; font-size: 0.76rem; margin-bottom: 44px; line-height: 1.5; }
+    .designs { display: flex; flex-direction: column; gap: 56px; max-width: 390px; margin: 0 auto; }
+    .design-option { display: flex; flex-direction: column; gap: 12px; }
+    .design-label { display: flex; align-items: baseline; gap: 10px; }
+    .design-number {
+      font-size: 0.58rem; font-weight: 700; color: #444;
+      text-transform: uppercase; letter-spacing: 0.12em; flex-shrink: 0;
+      background: #1A1A1E; padding: 4px 8px; border-radius: 4px;
+    }
+    .design-name { font-size: 1rem; font-weight: 700; letter-spacing: -0.02em; }
+    .design-desc { font-size: 0.72rem; color: #555; line-height: 1.5; }
+    .phone {
+      border-radius: 24px; overflow: hidden;
+      box-shadow: 0 12px 48px rgba(0,0,0,0.6);
+      border: 1px solid #222;
+    }
+
+    /* === COMMON HEADER / FILTERS === */
+    .common-hdr {
+      padding: 14px 16px 10px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .common-hdr-title { font-size: 0.95rem; font-weight: 800; color: #1a1a1a; }
+    .common-hdr-r { display: flex; gap: 6px; }
+    .common-btn {
+      width: 28px; height: 28px; border-radius: 50%; background: #EDECE8;
+      display: flex; align-items: center; justify-content: center; font-size: 0.6rem; color: #999;
+    }
+    .common-btn.av { background: #1a1a1a; color: #fff; font-weight: 700; }
+    .common-search { margin: 0 16px 6px; padding: 8px 12px; background: #EDECE8; border-radius: 10px; font-size: 0.65rem; color: #aaa; }
+    .common-filters { display: flex; gap: 4px; padding: 6px 16px; }
+    .cf { font-size: 0.56rem; padding: 3px 9px; border-radius: 12px; font-weight: 600; color: #999; background: #EDECE8; }
+    .cf.active { background: #1a1a1a; color: #fff; }
+    .common-months { display: flex; gap: 1px; padding: 4px 16px 8px; }
+    .cm { font-size: 0.46rem; padding: 3px 4px; font-weight: 600; color: #ccc; text-align: center; flex: 1; }
+    .cm.hl { color: #888; }
+    .cm.active { color: #1a1a1a; background: #EDECE8; border-radius: 4px; }
+    .common-nav { display: flex; border-top: 1px solid #E8E7E3; }
+    .cn-i { flex: 1; padding: 8px 0 12px; text-align: center; font-size: 0.55rem; font-weight: 600; color: #ccc; }
+    .cn-i.active { color: #1a1a1a; }
+
+    /* ===========================================
+       V1: LIGNES PURES — Original (sans photo)
+       =========================================== */
+    .v1 { background: #F6F5F1; font-family: 'Plus Jakarta Sans', sans-serif; }
+    .v1 .country-sep {
+      padding: 10px 16px 4px;
+      font-size: 0.58rem; font-weight: 700; color: #bbb;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .v1 .country-sep::after { content: ''; flex: 1; height: 1px; background: #E8E7E3; }
+    .v1 .dest-line {
+      display: flex; align-items: center; gap: 8px;
+      padding: 9px 16px; border-left: 3px solid transparent;
+    }
+    .v1 .dest-line.done { border-left-color: #22C55E; }
+    .v1 .dest-line.planned { border-left-color: #E5A33B; }
+    .v1 .dest-line.idea { border-left-color: #DDD; }
+    .v1 .dl-left { flex: 1; }
+    .v1 .dl-name { font-size: 0.78rem; font-weight: 700; color: #1a1a1a; }
+    .v1 .dl-sub { font-size: 0.48rem; color: #bbb; margin-top: 2px; }
+    .v1 .dl-right { text-align: right; }
+    .v1 .dl-date { font-size: 0.56rem; font-weight: 600; }
+    .v1 .dl-date.done { color: #22C55E; }
+    .v1 .dl-date.plan { color: #E5A33B; }
+    .v1 .dl-date.none { color: #ccc; }
+    .v1 .dl-info { font-size: 0.46rem; color: #bbb; margin-top: 1px; }
+
+    /* ===========================================
+       V2: MINI VIGNETTES — Petite photo ronde
+       =========================================== */
+    .v2 { background: #F6F5F1; font-family: 'Plus Jakarta Sans', sans-serif; }
+    .v2 .country-sep {
+      padding: 10px 16px 4px;
+      font-size: 0.58rem; font-weight: 700; color: #bbb;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .v2 .country-sep::after { content: ''; flex: 1; height: 1px; background: #E8E7E3; }
+    .v2 .dest-line {
+      display: flex; align-items: center; gap: 10px;
+      padding: 7px 16px; border-left: 3px solid transparent;
+    }
+    .v2 .dest-line.done { border-left-color: #22C55E; }
+    .v2 .dest-line.planned { border-left-color: #E5A33B; }
+    .v2 .dest-line.idea { border-left-color: #DDD; }
+    .v2 .dl-photo {
+      width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+      background-size: cover; background-position: center;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    }
+    .v2 .dl-left { flex: 1; }
+    .v2 .dl-name { font-size: 0.76rem; font-weight: 700; color: #1a1a1a; }
+    .v2 .dl-sub { font-size: 0.46rem; color: #bbb; margin-top: 2px; }
+    .v2 .dl-right { text-align: right; }
+    .v2 .dl-date { font-size: 0.54rem; font-weight: 600; }
+    .v2 .dl-date.done { color: #22C55E; }
+    .v2 .dl-date.plan { color: #E5A33B; }
+    .v2 .dl-date.none { color: #ccc; }
+    .v2 .dl-info { font-size: 0.44rem; color: #bbb; margin-top: 1px; }
+
+    /* ===========================================
+       V3: PHOTO BANDEAU — Fine bande photo derrière
+       =========================================== */
+    .v3 { background: #F6F5F1; font-family: 'Plus Jakarta Sans', sans-serif; }
+    .v3 .country-sep {
+      padding: 10px 16px 4px;
+      font-size: 0.58rem; font-weight: 700; color: #bbb;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .v3 .country-sep::after { content: ''; flex: 1; height: 1px; background: #E8E7E3; }
+    .v3 .dest-card {
+      margin: 4px 16px; border-radius: 12px; overflow: hidden;
+      position: relative; height: 56px;
+      display: flex; align-items: center;
+      background-size: cover; background-position: center;
+    }
+    .v3 .dest-card::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(90deg, rgba(255,255,255,0.92) 55%, rgba(255,255,255,0.5));
+    }
+    .v3 .dest-card.done { box-shadow: inset 3px 0 0 #22C55E; }
+    .v3 .dest-card.planned { box-shadow: inset 3px 0 0 #E5A33B; }
+    .v3 .dest-card.idea { box-shadow: inset 3px 0 0 #DDD; }
+    .v3 .dc-content {
+      position: relative; z-index: 1;
+      display: flex; align-items: center; gap: 8px;
+      padding: 0 14px; width: 100%;
+    }
+    .v3 .dc-left { flex: 1; }
+    .v3 .dc-name { font-size: 0.76rem; font-weight: 700; color: #1a1a1a; }
+    .v3 .dc-sub { font-size: 0.46rem; color: #777; margin-top: 2px; }
+    .v3 .dc-right { text-align: right; }
+    .v3 .dc-date { font-size: 0.54rem; font-weight: 600; }
+    .v3 .dc-date.done { color: #22C55E; }
+    .v3 .dc-date.plan { color: #C08A30; }
+    .v3 .dc-date.none { color: #aaa; }
+    .v3 .dc-info { font-size: 0.44rem; color: #888; margin-top: 1px; }
+
+    /* ===========================================
+       V4: PHOTO DROITE — Vignette photo à droite
+       =========================================== */
+    .v4 { background: #F6F5F1; font-family: 'Plus Jakarta Sans', sans-serif; }
+    .v4 .country-sep {
+      padding: 10px 16px 4px;
+      font-size: 0.58rem; font-weight: 700; color: #bbb;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .v4 .country-sep::after { content: ''; flex: 1; height: 1px; background: #E8E7E3; }
+    .v4 .dest-line {
+      display: flex; align-items: center; gap: 10px;
+      padding: 6px 16px; border-left: 3px solid transparent;
+    }
+    .v4 .dest-line.done { border-left-color: #22C55E; }
+    .v4 .dest-line.planned { border-left-color: #E5A33B; }
+    .v4 .dest-line.idea { border-left-color: #DDD; }
+    .v4 .dl-left { flex: 1; }
+    .v4 .dl-name { font-size: 0.76rem; font-weight: 700; color: #1a1a1a; }
+    .v4 .dl-tags { font-size: 0.46rem; color: #bbb; margin-top: 1px; }
+    .v4 .dl-bottom { display: flex; align-items: center; gap: 8px; margin-top: 3px; }
+    .v4 .dl-date { font-size: 0.54rem; font-weight: 600; }
+    .v4 .dl-date.done { color: #22C55E; }
+    .v4 .dl-date.plan { color: #E5A33B; }
+    .v4 .dl-date.none { color: #ccc; }
+    .v4 .dl-extra { font-size: 0.44rem; color: #bbb; }
+    .v4 .dl-photo {
+      width: 52px; height: 38px; border-radius: 8px; flex-shrink: 0;
+      background-size: cover; background-position: center;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+
+    /* ===========================================
+       V5: PHOTO HEADER PAYS — Photo large par pays
+       =========================================== */
+    .v5 { background: #F6F5F1; font-family: 'Plus Jakarta Sans', sans-serif; }
+    .v5 .country-banner {
+      margin: 6px 16px 0; border-radius: 12px; overflow: hidden;
+      height: 44px; position: relative;
+      background-size: cover; background-position: center;
+    }
+    .v5 .country-banner::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(90deg, rgba(0,0,0,0.55) 40%, rgba(0,0,0,0.15));
+    }
+    .v5 .cb-content {
+      position: relative; z-index: 1;
+      display: flex; align-items: center; gap: 6px;
+      padding: 0 14px; height: 100%;
+    }
+    .v5 .cb-flag { font-size: 0.9rem; }
+    .v5 .cb-name { font-size: 0.7rem; font-weight: 700; color: #fff; }
+    .v5 .cb-cnt { margin-left: auto; font-size: 0.5rem; color: rgba(255,255,255,0.6); font-weight: 600; }
+    .v5 .dest-line {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 16px 8px 30px; border-left: 3px solid transparent;
+    }
+    .v5 .dest-line.done { border-left-color: #22C55E; }
+    .v5 .dest-line.planned { border-left-color: #E5A33B; }
+    .v5 .dest-line.idea { border-left-color: #DDD; }
+    .v5 .dl-left { flex: 1; }
+    .v5 .dl-name { font-size: 0.76rem; font-weight: 700; color: #1a1a1a; }
+    .v5 .dl-sub { font-size: 0.46rem; color: #bbb; margin-top: 2px; }
+    .v5 .dl-right { text-align: right; }
+    .v5 .dl-date { font-size: 0.54rem; font-weight: 600; }
+    .v5 .dl-date.done { color: #22C55E; }
+    .v5 .dl-date.plan { color: #E5A33B; }
+    .v5 .dl-date.none { color: #ccc; }
+    .v5 .dl-info { font-size: 0.44rem; color: #bbb; margin-top: 1px; }
+  </style>
+</head>
+<body>
+
+<h1>5 variantes — Lignes pures</h1>
+<p class="subtitle">Minimalisme épuré · Fond crème chaud<br>Avec et sans photos de destinations</p>
+
+<div class="designs">
+
+  <!-- ====== V1: ORIGINAL SANS PHOTO ====== -->
+  <div class="design-option">
+    <div class="design-label">
+      <span class="design-number">1</span>
+      <span class="design-name">Lignes pures — Sans photo</span>
+    </div>
+    <p class="design-desc">L'originale. Zéro carte, zéro photo. Trait coloré + texte pur. Maximum de densité et lisibilité.</p>
+    <div class="phone v1">
+      <div class="common-hdr"><div class="common-hdr-title">Mes Voyages</div><div class="common-hdr-r"><div class="common-btn">＋</div><div class="common-btn av">M</div></div></div>
+      <div class="common-search">🔍 Rechercher…</div>
+      <div class="common-filters"><span class="cf active">Tous · 8</span><span class="cf">Visités</span><span class="cf">Planifiés</span><span class="cf">Idées</span></div>
+      <div class="common-months"><span class="cm">J</span><span class="cm">F</span><span class="cm hl">M</span><span class="cm hl">A</span><span class="cm active">M</span><span class="cm hl">J</span><span class="cm hl">J</span><span class="cm">A</span><span class="cm">S</span><span class="cm hl">O</span><span class="cm">N</span><span class="cm hl">D</span></div>
+      <div class="country-sep">🇬🇷 Grèce</div>
+      <div class="dest-line done"><div class="dl-left"><div class="dl-name">Santorini</div><div class="dl-sub">plage · romantique · ✈ 3h30 · ☀ avr–oct</div></div><div class="dl-right"><div class="dl-date done">juil. 2024 ✓</div></div></div>
+      <div class="country-sep">🇯🇵 Japon</div>
+      <div class="dest-line planned"><div class="dl-left"><div class="dl-name">Kyoto</div><div class="dl-sub">temples · culture · ✈ 12h · ☀ mars–mai</div></div><div class="dl-right"><div class="dl-date plan">25 mars–5 avr.</div></div></div>
+      <div class="dest-line planned"><div class="dl-left"><div class="dl-name">Tokyo</div><div class="dl-sub">ville · gastro · ✈ 12h · ☀ mars–mai</div></div><div class="dl-right"><div class="dl-date plan">6–12 avr.</div></div></div>
+      <div class="country-sep">🇮🇹 Italie</div>
+      <div class="dest-line done"><div class="dl-left"><div class="dl-name">Cinque Terre</div><div class="dl-sub">rando · plage · ✈ 2h · ☀ mai–sep</div></div><div class="dl-right"><div class="dl-date done">juin 2025 ✓</div></div></div>
+      <div class="dest-line idea"><div class="dl-left"><div class="dl-name">Amalfi</div><div class="dl-sub">romantique · ✈ 2h30 · ☀ mai–oct</div></div><div class="dl-right"><div class="dl-date none">—</div></div></div>
+      <div class="country-sep">🇲🇦 Maroc</div>
+      <div class="dest-line planned"><div class="dl-left"><div class="dl-name">Marrakech</div><div class="dl-sub">culture · gastro · ✈ 3h · ☀ mars–mai</div></div><div class="dl-right"><div class="dl-date plan">15–22 oct.</div></div></div>
+      <div class="country-sep">🇮🇸 Islande</div>
+      <div class="dest-line planned"><div class="dl-left"><div class="dl-name">Reykjavik</div><div class="dl-sub">nature · aventure · ✈ 4h · ☀ juin–août</div></div><div class="dl-right"><div class="dl-date plan">20–30 déc.</div></div></div>
+      <div class="country-sep">🇵🇹 Portugal</div>
+      <div class="dest-line idea"><div class="dl-left"><div class="dl-name">Lisbonne</div><div class="dl-sub">culture · gastro · ✈ 2h30 · ☀ avr–oct</div></div><div class="dl-right"><div class="dl-date none">—</div></div></div>
+      <div class="common-nav"><div class="cn-i">Carte</div><div class="cn-i active">Liste</div><div class="cn-i">Planning</div></div>
+    </div>
+  </div>
+
+  <!-- ====== V2: MINI VIGNETTES RONDES ====== -->
+  <div class="design-option">
+    <div class="design-label">
+      <span class="design-number">2</span>
+      <span class="design-name">Mini vignettes — Photo carrée</span>
+    </div>
+    <p class="design-desc">Même lignes pures + petite photo carrée (coins arrondis) à gauche de chaque destination. Photos chargées automatiquement.</p>
+    <div class="phone v2">
+      <div class="common-hdr"><div class="common-hdr-title">Mes Voyages</div><div class="common-hdr-r"><div class="common-btn">＋</div><div class="common-btn av">M</div></div></div>
+      <div class="common-search">🔍 Rechercher…</div>
+      <div class="common-filters"><span class="cf active">Tous · 8</span><span class="cf">Visités</span><span class="cf">Planifiés</span><span class="cf">Idées</span></div>
+      <div class="common-months"><span class="cm">J</span><span class="cm">F</span><span class="cm hl">M</span><span class="cm hl">A</span><span class="cm active">M</span><span class="cm hl">J</span><span class="cm hl">J</span><span class="cm">A</span><span class="cm">S</span><span class="cm hl">O</span><span class="cm">N</span><span class="cm hl">D</span></div>
+      <div class="country-sep">🇬🇷 Grèce</div>
+      <div class="dest-line done"><div class="dl-photo" style="background-image:url(https://images.unsplash.com/photo-1613395877344-13d4a8e0d49e?w=100&h=100&fit=crop&q=60)"></div><div class="dl-left"><div class="dl-name">Santorini</div><div class="dl-sub">plage · romantique · ✈ 3h30 · ☀ avr–oct</div></div><div class="dl-right"><div class="dl-date done">2024 ✓</div><div class="dl-info"></div></div></div>
+      <div class="country-sep">🇯🇵 Japon</div>
+      <div class="dest-line planned"><div class="dl-photo" style="background-image:url(https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=100&h=100&fit=crop&q=60)"></div><div class="dl-left"><div class="dl-name">Kyoto</div><div class="dl-sub">temples · culture · ✈ 12h · ☀ mars–mai</div></div><div class="dl-right"><div class="dl-date plan">mars–avr.</div></div></div>
+      <div class="dest-line planned"><div class="dl-photo" style="background-image:url(https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=100&h=100&fit=crop&q=60)"></div><div class="dl-left"><div class="dl-name">Tokyo</div><div class="dl-sub">ville · gastro · ✈ 12h · ☀ mars–mai</div></div><div class="dl-right"><div class="dl-date plan">avr.</div></div></div>
+      <div class="country-sep">🇮🇹 Italie</div>
+      <div class="dest-line done"><div class="dl-photo" style="background-image:url(https://images.unsplash.com/photo-1516483638261-f4dbaf036963?w=100&h=100&fit=crop&q=60)"></div><div class="dl-left"><div class="dl-name">Cinque Terre</div><div class="dl-sub">rando · plage · ✈ 2h · ☀ mai–sep</div></div><div class="dl-right"><div class="dl-date done">2025 ✓</div></div></div>
+      <div class="dest-line idea"><div class="dl-photo" style="background-image:url(https://images.unsplash.com/photo-1455587734955-081b22074882?w=100&h=100&fit=crop&q=60)"></div><div class="dl-left"><div class="dl-name">Amalfi</div><div class="dl-sub">romantique · ✈ 2h30 · ☀ mai–oct</div></div><div class="dl-right"><div class="dl-date none">—</div></div></div>
+      <div class="country-sep">🇲🇦 Maroc</div>
+      <div class="dest-line planned"><div class="dl-photo" style="background-image:url(https://images.unsplash.com/photo-1597212618440-806262de4f6b?w=100&h=100&fit=crop&q=60)"></div><div class="dl-left"><div class="dl-name">Marrakech</div><div class="dl-sub">culture · gastro · ✈ 3h · ☀ mars–mai</div></div><div class="dl-right"><div class="dl-date plan">oct.</div></div></div>
+      <div class="country-sep">🇮🇸 Islande</div>
+      <div class="dest-line planned"><div class="dl-photo" style="background-image:url(https://images.unsplash.com/photo-1504829857797-ddff29c27927?w=100&h=100&fit=crop&q=60)"></div><div class="dl-left"><div class="dl-name">Reykjavik</div><div class="dl-sub">nature · aventure · ✈ 4h · ☀ juin–août</div></div><div class="dl-right"><div class="dl-date plan">déc.</div></div></div>
+      <div class="country-sep">🇵🇹 Portugal</div>
+      <div class="dest-line idea"><div class="dl-photo" style="background-image:url(https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=100&h=100&fit=crop&q=60)"></div><div class="dl-left"><div class="dl-name">Lisbonne</div><div class="dl-sub">culture · gastro · ✈ 2h30 · ☀ avr–oct</div></div><div class="dl-right"><div class="dl-date none">—</div></div></div>
+      <div class="common-nav"><div class="cn-i">Carte</div><div class="cn-i active">Liste</div><div class="cn-i">Planning</div></div>
+    </div>
+  </div>
+
+  <!-- ====== V3: PHOTO BANDEAU ====== -->
+  <div class="design-option">
+    <div class="design-label">
+      <span class="design-number">3</span>
+      <span class="design-name">Photo bandeau — Image derrière</span>
+    </div>
+    <p class="design-desc">La photo de la destination apparaît en fond derrière chaque ligne, avec un voile blanc semi-transparent. L'image se révèle subtilement sur la droite.</p>
+    <div class="phone v3">
+      <div class="common-hdr"><div class="common-hdr-title">Mes Voyages</div><div class="common-hdr-r"><div class="common-btn">＋</div><div class="common-btn av">M</div></div></div>
+      <div class="common-search">🔍 Rechercher…</div>
+      <div class="common-filters"><span class="cf active">Tous · 8</span><span class="cf">Visités</span><span class="cf">Planifiés</span><span class="cf">Idées</span></div>
+      <div class="common-months"><span class="cm">J</span><span class="cm">F</span><span class="cm hl">M</span><span class="cm hl">A</span><span class="cm active">M</span><span class="cm hl">J</span><span class="cm hl">J</span><span class="cm">A</span><span class="cm">S</span><span class="cm hl">O</span><span class="cm">N</span><span class="cm hl">D</span></div>
+      <div class="country-sep">🇬🇷 Grèce</div>
+      <div class="dest-card done" style="background-image:url(https://images.unsplash.com/photo-1613395877344-13d4a8e0d49e?w=400&h=120&fit=crop&q=60)"><div class="dc-content"><div class="dc-left"><div class="dc-name">Santorini</div><div class="dc-sub">plage · romantique · ✈ 3h30 · ☀ avr–oct</div></div><div class="dc-right"><div class="dc-date done">juil. 2024 ✓</div></div></div></div>
+      <div class="country-sep">🇯🇵 Japon</div>
+      <div class="dest-card planned" style="background-image:url(https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=400&h=120&fit=crop&q=60)"><div class="dc-content"><div class="dc-left"><div class="dc-name">Kyoto</div><div class="dc-sub">temples · culture · ✈ 12h · ☀ mars–mai</div></div><div class="dc-right"><div class="dc-date plan">25 mars–5 avr.</div></div></div></div>
+      <div class="dest-card planned" style="background-image:url(https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=400&h=120&fit=crop&q=60)"><div class="dc-content"><div class="dc-left"><div class="dc-name">Tokyo</div><div class="dc-sub">ville · gastro · ✈ 12h · ☀ mars–mai</div></div><div class="dc-right"><div class="dc-date plan">6–12 avr.</div></div></div></div>
+      <div class="country-sep">🇮🇹 Italie</div>
+      <div class="dest-card done" style="background-image:url(https://images.unsplash.com/photo-1516483638261-f4dbaf036963?w=400&h=120&fit=crop&q=60)"><div class="dc-content"><div class="dc-left"><div class="dc-name">Cinque Terre</div><div class="dc-sub">rando · plage · ✈ 2h · ☀ mai–sep</div></div><div class="dc-right"><div class="dc-date done">juin 2025 ✓</div></div></div></div>
+      <div class="dest-card idea" style="background-image:url(https://images.unsplash.com/photo-1455587734955-081b22074882?w=400&h=120&fit=crop&q=60)"><div class="dc-content"><div class="dc-left"><div class="dc-name">Amalfi</div><div class="dc-sub">romantique · ✈ 2h30 · ☀ mai–oct</div></div><div class="dc-right"><div class="dc-date none">—</div></div></div></div>
+      <div class="country-sep">🇲🇦 Maroc</div>
+      <div class="dest-card planned" style="background-image:url(https://images.unsplash.com/photo-1597212618440-806262de4f6b?w=400&h=120&fit=crop&q=60)"><div class="dc-content"><div class="dc-left"><div class="dc-name">Marrakech</div><div class="dc-sub">culture · gastro · ✈ 3h · ☀ mars–mai</div></div><div class="dc-right"><div class="dc-date plan">15–22 oct.</div></div></div></div>
+      <div class="country-sep">🇮🇸 Islande</div>
+      <div class="dest-card planned" style="background-image:url(https://images.unsplash.com/photo-1504829857797-ddff29c27927?w=400&h=120&fit=crop&q=60)"><div class="dc-content"><div class="dc-left"><div class="dc-name">Reykjavik</div><div class="dc-sub">nature · aventure · ✈ 4h · ☀ juin–août</div></div><div class="dc-right"><div class="dc-date plan">20–30 déc.</div></div></div></div>
+      <div class="country-sep">🇵🇹 Portugal</div>
+      <div class="dest-card idea" style="background-image:url(https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=400&h=120&fit=crop&q=60)"><div class="dc-content"><div class="dc-left"><div class="dc-name">Lisbonne</div><div class="dc-sub">culture · gastro · ✈ 2h30 · ☀ avr–oct</div></div><div class="dc-right"><div class="dc-date none">—</div></div></div></div>
+      <div class="common-nav"><div class="cn-i">Carte</div><div class="cn-i active">Liste</div><div class="cn-i">Planning</div></div>
+    </div>
+  </div>
+
+  <!-- ====== V4: PHOTO DROITE ====== -->
+  <div class="design-option">
+    <div class="design-label">
+      <span class="design-number">4</span>
+      <span class="design-name">Photo droite — Vignette latérale</span>
+    </div>
+    <p class="design-desc">Texte à gauche (nom, tags, date), petite photo rectangulaire à droite. Bon compromis info + visuel sans perdre de place.</p>
+    <div class="phone v4">
+      <div class="common-hdr"><div class="common-hdr-title">Mes Voyages</div><div class="common-hdr-r"><div class="common-btn">＋</div><div class="common-btn av">M</div></div></div>
+      <div class="common-search">🔍 Rechercher…</div>
+      <div class="common-filters"><span class="cf active">Tous · 8</span><span class="cf">Visités</span><span class="cf">Planifiés</span><span class="cf">Idées</span></div>
+      <div class="common-months"><span class="cm">J</span><span class="cm">F</span><span class="cm hl">M</span><span class="cm hl">A</span><span class="cm active">M</span><span class="cm hl">J</span><span class="cm hl">J</span><span class="cm">A</span><span class="cm">S</span><span class="cm hl">O</span><span class="cm">N</span><span class="cm hl">D</span></div>
+      <div class="country-sep">🇬🇷 Grèce</div>
+      <div class="dest-line done"><div class="dl-left"><div class="dl-name">Santorini</div><div class="dl-tags">plage · romantique</div><div class="dl-bottom"><span class="dl-date done">juil. 2024 ✓</span><span class="dl-extra">✈ 3h30 · ☀ avr–oct</span></div></div><div class="dl-photo" style="background-image:url(https://images.unsplash.com/photo-1613395877344-13d4a8e0d49e?w=120&h=90&fit=crop&q=60)"></div></div>
+      <div class="country-sep">🇯🇵 Japon</div>
+      <div class="dest-line planned"><div class="dl-left"><div class="dl-name">Kyoto</div><div class="dl-tags">temples · culture</div><div class="dl-bottom"><span class="dl-date plan">25 mars–5 avr.</span><span class="dl-extra">✈ 12h · ☀ mars–mai</span></div></div><div class="dl-photo" style="background-image:url(https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=120&h=90&fit=crop&q=60)"></div></div>
+      <div class="dest-line planned"><div class="dl-left"><div class="dl-name">Tokyo</div><div class="dl-tags">ville · gastro</div><div class="dl-bottom"><span class="dl-date plan">6–12 avr.</span><span class="dl-extra">✈ 12h · ☀ mars–mai</span></div></div><div class="dl-photo" style="background-image:url(https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=120&h=90&fit=crop&q=60)"></div></div>
+      <div class="country-sep">🇮🇹 Italie</div>
+      <div class="dest-line done"><div class="dl-left"><div class="dl-name">Cinque Terre</div><div class="dl-tags">rando · plage</div><div class="dl-bottom"><span class="dl-date done">juin 2025 ✓</span><span class="dl-extra">✈ 2h · ☀ mai–sep</span></div></div><div class="dl-photo" style="background-image:url(https://images.unsplash.com/photo-1516483638261-f4dbaf036963?w=120&h=90&fit=crop&q=60)"></div></div>
+      <div class="dest-line idea"><div class="dl-left"><div class="dl-name">Amalfi</div><div class="dl-tags">romantique</div><div class="dl-bottom"><span class="dl-date none">—</span><span class="dl-extra">✈ 2h30 · ☀ mai–oct</span></div></div><div class="dl-photo" style="background-image:url(https://images.unsplash.com/photo-1455587734955-081b22074882?w=120&h=90&fit=crop&q=60)"></div></div>
+      <div class="country-sep">🇲🇦 Maroc</div>
+      <div class="dest-line planned"><div class="dl-left"><div class="dl-name">Marrakech</div><div class="dl-tags">culture · gastro</div><div class="dl-bottom"><span class="dl-date plan">15–22 oct.</span><span class="dl-extra">✈ 3h · ☀ mars–mai</span></div></div><div class="dl-photo" style="background-image:url(https://images.unsplash.com/photo-1597212618440-806262de4f6b?w=120&h=90&fit=crop&q=60)"></div></div>
+      <div class="country-sep">🇮🇸 Islande</div>
+      <div class="dest-line planned"><div class="dl-left"><div class="dl-name">Reykjavik</div><div class="dl-tags">nature · aventure</div><div class="dl-bottom"><span class="dl-date plan">20–30 déc.</span><span class="dl-extra">✈ 4h · ☀ juin–août</span></div></div><div class="dl-photo" style="background-image:url(https://images.unsplash.com/photo-1504829857797-ddff29c27927?w=120&h=90&fit=crop&q=60)"></div></div>
+      <div class="country-sep">🇵🇹 Portugal</div>
+      <div class="dest-line idea"><div class="dl-left"><div class="dl-name">Lisbonne</div><div class="dl-tags">culture · gastro</div><div class="dl-bottom"><span class="dl-date none">—</span><span class="dl-extra">✈ 2h30 · ☀ avr–oct</span></div></div><div class="dl-photo" style="background-image:url(https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=120&h=90&fit=crop&q=60)"></div></div>
+      <div class="common-nav"><div class="cn-i">Carte</div><div class="cn-i active">Liste</div><div class="cn-i">Planning</div></div>
+    </div>
+  </div>
+
+  <!-- ====== V5: PHOTO HEADER PAYS ====== -->
+  <div class="design-option">
+    <div class="design-label">
+      <span class="design-number">5</span>
+      <span class="design-name">Banner pays — Photo en-tête</span>
+    </div>
+    <p class="design-desc">Chaque pays a un bandeau photo panoramique en header (image du pays). Destinations listées en dessous en lignes pures. Le meilleur des deux mondes.</p>
+    <div class="phone v5">
+      <div class="common-hdr"><div class="common-hdr-title">Mes Voyages</div><div class="common-hdr-r"><div class="common-btn">＋</div><div class="common-btn av">M</div></div></div>
+      <div class="common-search">🔍 Rechercher…</div>
+      <div class="common-filters"><span class="cf active">Tous · 8</span><span class="cf">Visités</span><span class="cf">Planifiés</span><span class="cf">Idées</span></div>
+      <div class="common-months"><span class="cm">J</span><span class="cm">F</span><span class="cm hl">M</span><span class="cm hl">A</span><span class="cm active">M</span><span class="cm hl">J</span><span class="cm hl">J</span><span class="cm">A</span><span class="cm">S</span><span class="cm hl">O</span><span class="cm">N</span><span class="cm hl">D</span></div>
+      <div class="country-banner" style="background-image:url(https://images.unsplash.com/photo-1613395877344-13d4a8e0d49e?w=400&h=100&fit=crop&q=60)"><div class="cb-content"><span class="cb-flag">🇬🇷</span><span class="cb-name">Grèce</span><span class="cb-cnt">1 destination</span></div></div>
+      <div class="dest-line done"><div class="dl-left"><div class="dl-name">Santorini</div><div class="dl-sub">plage · romantique · ✈ 3h30 · ☀ avr–oct</div></div><div class="dl-right"><div class="dl-date done">juil. 2024 ✓</div></div></div>
+      <div class="country-banner" style="background-image:url(https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=400&h=100&fit=crop&q=60)"><div class="cb-content"><span class="cb-flag">🇯🇵</span><span class="cb-name">Japon</span><span class="cb-cnt">2 destinations</span></div></div>
+      <div class="dest-line planned"><div class="dl-left"><div class="dl-name">Kyoto</div><div class="dl-sub">temples · culture · ✈ 12h · ☀ mars–mai</div></div><div class="dl-right"><div class="dl-date plan">25 mars–5 avr.</div></div></div>
+      <div class="dest-line planned"><div class="dl-left"><div class="dl-name">Tokyo</div><div class="dl-sub">ville · gastro · ✈ 12h · ☀ mars–mai</div></div><div class="dl-right"><div class="dl-date plan">6–12 avr.</div></div></div>
+      <div class="country-banner" style="background-image:url(https://images.unsplash.com/photo-1516483638261-f4dbaf036963?w=400&h=100&fit=crop&q=60)"><div class="cb-content"><span class="cb-flag">🇮🇹</span><span class="cb-name">Italie</span><span class="cb-cnt">2 destinations</span></div></div>
+      <div class="dest-line done"><div class="dl-left"><div class="dl-name">Cinque Terre</div><div class="dl-sub">rando · plage · ✈ 2h · ☀ mai–sep</div></div><div class="dl-right"><div class="dl-date done">juin 2025 ✓</div></div></div>
+      <div class="dest-line idea"><div class="dl-left"><div class="dl-name">Amalfi</div><div class="dl-sub">romantique · ✈ 2h30 · ☀ mai–oct</div></div><div class="dl-right"><div class="dl-date none">—</div></div></div>
+      <div class="country-banner" style="background-image:url(https://images.unsplash.com/photo-1597212618440-806262de4f6b?w=400&h=100&fit=crop&q=60)"><div class="cb-content"><span class="cb-flag">🇲🇦</span><span class="cb-name">Maroc</span><span class="cb-cnt">1 destination</span></div></div>
+      <div class="dest-line planned"><div class="dl-left"><div class="dl-name">Marrakech</div><div class="dl-sub">culture · gastro · ✈ 3h · ☀ mars–mai</div></div><div class="dl-right"><div class="dl-date plan">15–22 oct.</div></div></div>
+      <div class="country-banner" style="background-image:url(https://images.unsplash.com/photo-1504829857797-ddff29c27927?w=400&h=100&fit=crop&q=60)"><div class="cb-content"><span class="cb-flag">🇮🇸</span><span class="cb-name">Islande</span><span class="cb-cnt">1 destination</span></div></div>
+      <div class="dest-line planned"><div class="dl-left"><div class="dl-name">Reykjavik</div><div class="dl-sub">nature · aventure · ✈ 4h · ☀ juin–août</div></div><div class="dl-right"><div class="dl-date plan">20–30 déc.</div></div></div>
+      <div class="country-banner" style="background-image:url(https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=400&h=100&fit=crop&q=60)"><div class="cb-content"><span class="cb-flag">🇵🇹</span><span class="cb-name">Portugal</span><span class="cb-cnt">1 destination</span></div></div>
+      <div class="dest-line idea"><div class="dl-left"><div class="dl-name">Lisbonne</div><div class="dl-sub">culture · gastro · ✈ 2h30 · ☀ avr–oct</div></div><div class="dl-right"><div class="dl-date none">—</div></div></div>
+      <div class="common-nav"><div class="cn-i">Carte</div><div class="cn-i active">Liste</div><div class="cn-i">Planning</div></div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
