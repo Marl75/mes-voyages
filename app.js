@@ -356,11 +356,12 @@ function loadDestinations(loadDemo = false) {
       .orderBy('createdAt', 'desc')
       .onSnapshot(snapshot => {
         state.destinations = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        if (state.destinations.length === 0 && loadDemo) {
-          injectDemoData();
-        } else {
-          renderAll();
+        if (state.destinations.length === 0) {
+          const migrated = migrateLocalData();
+          if (migrated) return;
+          if (loadDemo) { injectDemoData(); return; }
         }
+        renderAll();
       });
   } else {
     const saved = localStorage.getItem(getStorageKey());
@@ -371,6 +372,45 @@ function loadDestinations(loadDemo = false) {
       renderAll();
     }
   }
+}
+
+function migrateLocalData() {
+  if (!state.firebaseReady || !state.user || state.user.uid === 'demo') return false;
+
+  let localDests = [];
+
+  const allKeys = Object.keys(localStorage).filter(k => k.startsWith('mv-destinations'));
+  for (const key of allKeys) {
+    try {
+      const data = JSON.parse(localStorage.getItem(key));
+      if (Array.isArray(data) && data.length > 0) {
+        data.forEach(d => {
+          if (!localDests.some(ld => ld.name === d.name)) localDests.push(d);
+        });
+      }
+    } catch (e) { /* ignore */ }
+  }
+
+  if (localDests.length === 0) return false;
+
+  const db = firebase.firestore();
+  const col = db.collection('users').doc(state.user.uid).collection('destinations');
+  const batch = db.batch();
+
+  localDests.forEach(dest => {
+    const { id, ...data } = dest;
+    const ref = col.doc();
+    batch.set(ref, { ...data, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+  });
+
+  batch.commit().then(() => {
+    showToast(`${localDests.length} destination(s) récupérée(s) !`);
+  }).catch(err => {
+    console.warn('Migration error:', err);
+    showToast('Erreur lors de la migration des données');
+  });
+
+  return true;
 }
 
 function injectDemoData() {
