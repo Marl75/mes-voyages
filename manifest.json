@@ -1,7 +1,7 @@
 {
-  "name": "Mes Voyages",
-  "short_name": "Voyage",
-  "description": "Planifiez vos prochaines aventures",
+  "name": "My Trips",
+  "short_name": "My Trips",
+  "description": "Plan your next adventures",
   "start_url": ".",
   "display": "standalone",
   "orientation": "portrait",
