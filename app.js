@@ -8,13 +8,12 @@
 // ============================================
 
 const FIREBASE_CONFIG = {
-  // REPLACE with your Firebase config from console.firebase.google.com
-  apiKey: "",
-  authDomain: "",
-  projectId: "",
-  storageBucket: "",
-  messagingSenderId: "",
-  appId: ""
+  apiKey: "AIzaSyBHwzRBffLsMpMOarwlQL5O44vVCNXYyS0",
+  authDomain: "mes-voyages-acea0.firebaseapp.com",
+  projectId: "mes-voyages-acea0",
+  storageBucket: "mes-voyages-acea0.firebasestorage.app",
+  messagingSenderId: "427321810486",
+  appId: "1:427321810486:web:15b2e48476b191dc598297"
 };
 
 const NOMINATIM_URL = 'https://nominatim.openstreetmap.org';
