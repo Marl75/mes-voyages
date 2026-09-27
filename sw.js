@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mes-voyages-v16';
+const CACHE_NAME = 'mes-voyages-v17';
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -40,11 +40,38 @@ self.addEventListener('fetch', event => {
     return;
   }
 
+  if (event.request.method !== 'GET') return;
+
+  // App files: network first so updates arrive without bumping CACHE_NAME,
+  // cache as offline fallback
+  if (url.origin === self.location.origin) {
+    event.respondWith(
+      fetch(event.request).then(response => {
+        if (response.ok) {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+        }
+        return response;
+      }).catch(() =>
+        caches.match(event.request).then(cached => {
+          if (cached) return cached;
+          if (event.request.mode === 'navigate') return caches.match('./index.html');
+        })
+      )
+    );
+    return;
+  }
+
+  // Third-party libraries and tiles: cache first
   event.respondWith(
     caches.match(event.request).then(cached => {
       if (cached) return cached;
       return fetch(event.request).then(response => {
-        if (response.ok && event.request.method === 'GET') {
+        // Scripts/styles/fonts loaded by <script>/<link> come back opaque (no CORS):
+        // cache them too so Firebase, Leaflet and topojson work offline
+        const cacheable = response.ok ||
+          (response.type === 'opaque' && ['script', 'style', 'font'].includes(event.request.destination));
+        if (cacheable) {
           const clone = response.clone();
           caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
         }

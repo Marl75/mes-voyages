@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mes Voyages</title>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#F6F5F1">
@@ -41,10 +41,10 @@
     <header class="header">
       <h1 class="header-title" data-i18n="appTitle">Mes Voyages</h1>
       <div class="header-actions">
-        <button class="header-btn" onclick="openAddModal()" title="Ajouter">
+        <button class="header-btn" onclick="openAddModal()" title="Ajouter" aria-label="Ajouter" data-i18n-aria="addDest">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         </button>
-        <button class="header-btn avatar" onclick="toggleUserMenu()" id="user-avatar-btn">M</button>
+        <button class="header-btn avatar" onclick="toggleUserMenu()" id="user-avatar-btn" aria-label="Compte" data-i18n-aria="account">M</button>
       </div>
     </header>
 
@@ -84,9 +84,9 @@
       <!-- PLANNING VIEW -->
       <div id="view-planning" class="view hidden">
         <div class="planning-header">
-          <button class="planning-nav" onclick="changePlanningYear(-1)">‹</button>
+          <button class="planning-nav" onclick="changePlanningYear(-1)" aria-label="Année précédente" data-i18n-aria="prevYear">‹</button>
           <span class="planning-year" id="planning-year">2026</span>
-          <button class="planning-nav" onclick="changePlanningYear(1)">›</button>
+          <button class="planning-nav" onclick="changePlanningYear(1)" aria-label="Année suivante" data-i18n-aria="nextYear">›</button>
         </div>
         <div class="planning-grid" id="planning-grid"></div>
         <div class="planning-legend" id="planning-legend"></div>
@@ -116,7 +116,7 @@
     <div class="modal" onclick="event.stopPropagation()">
       <div class="modal-header">
         <h2 id="modal-title" data-i18n="newDest">Nouvelle destination</h2>
-        <button class="modal-close" onclick="closeModal()">✕</button>
+        <button class="modal-close" onclick="closeModal()" aria-label="Fermer" data-i18n-aria="close">✕</button>
       </div>
       <div class="modal-body">
         <div class="form-group">
@@ -148,7 +148,7 @@
           <label data-i18n="labelPhoto">Photo</label>
           <div class="photo-input-row">
             <input type="text" id="dest-photo" placeholder="URL de la photo ou recherche auto…" oninput="onPhotoUrlInput()" data-i18n-ph="photoPh">
-            <button type="button" class="photo-search-btn" onclick="searchPhoto()" title="Rechercher une photo">🔍</button>
+            <button type="button" class="photo-search-btn" onclick="searchPhoto()" title="Rechercher une photo" aria-label="Rechercher une photo" data-i18n-aria="searchPhoto">🔍</button>
           </div>
           <div id="photo-preview" class="photo-preview hidden"></div>
         </div>
@@ -177,7 +177,7 @@
   <div id="detail-overlay" class="modal-overlay hidden" onclick="closeDetail()">
     <div class="modal detail-modal" onclick="event.stopPropagation()">
       <div class="detail-photo" id="detail-photo"></div>
-      <button class="modal-close detail-close" onclick="closeDetail()">✕</button>
+      <button class="modal-close detail-close" onclick="closeDetail()" aria-label="Fermer" data-i18n-aria="close">✕</button>
       <div class="detail-body" id="detail-body"></div>
       <div class="detail-footer">
         <button class="modal-btn edit" onclick="editFromDetail()" data-i18n="edit">Modifier</button>
