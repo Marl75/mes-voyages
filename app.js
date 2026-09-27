@@ -42,12 +42,14 @@ const I18N = {
     statusIdea: '💡 Idée', statusPlanned: '📅 Planifié', statusDone: '✅ Visité',
     addDates: '+ Ajouter des dates', btnDelete: 'Supprimer', save: 'Enregistrer',
     edit: 'Modifier', cancel: 'Annuler',
+    addDest: 'Ajouter', account: 'Compte', close: 'Fermer', searchPhoto: 'Rechercher une photo',
+    prevYear: 'Année précédente', nextYear: 'Année suivante', removeDates: 'Retirer ces dates',
     destinations: 'destinations', destination: 'destination', countries: 'pays',
     visited: 'visité', visitedP: 'visités', planned: 'planifié', plannedP: 'planifiés',
     noDestinations: 'Aucune destination.<br>Ajoutez votre première !', noResults: 'Aucun résultat.',
     statusLabelDone: 'Visité', statusLabelPlanned: 'Planifié', statusLabelIdea: 'Idée',
     detailTravel: '✈ Trajet', detailBestMonths: '☀ Meilleurs mois',
-    upcoming: 'À venir', past: 'Passé', day: 'jour', days: 'jours',
+    upcoming: 'À venir', past: 'Passé', day: 'jour', days: 'jours', dayShort: 'j', otherCountry: 'Autres',
     confirmDelete: 'Supprimer « {name} » ?',
     toastAccountCreated: 'Compte créé !', toastEnterName: 'Entrez un nom de destination',
     toastEnterNameFirst: "Entrez d'abord un nom de destination",
@@ -55,6 +57,7 @@ const I18N = {
     toastDeleted: 'Destination supprimée', toastPhotoFound: 'Photo trouvée !',
     toastNoPhoto: 'Aucune photo trouvée — collez une URL manuellement',
     toastSearchError: 'Erreur de recherche',
+    toastSaveError: "Erreur lors de l'enregistrement", toastDeleteError: 'Erreur lors de la suppression',
     toastMigrated: '{n} destination(s) récupérée(s) !', toastMigrationError: 'Erreur lors de la migration des données',
     errEmailAndPwd: 'Veuillez saisir votre email et mot de passe.',
     errEmail: 'Veuillez saisir votre email.', errPwd: 'Veuillez saisir votre mot de passe.',
@@ -91,12 +94,14 @@ const I18N = {
     statusIdea: '💡 Idea', statusPlanned: '📅 Planned', statusDone: '✅ Visited',
     addDates: '+ Add dates', btnDelete: 'Delete', save: 'Save',
     edit: 'Edit', cancel: 'Cancel',
+    addDest: 'Add', account: 'Account', close: 'Close', searchPhoto: 'Search for a photo',
+    prevYear: 'Previous year', nextYear: 'Next year', removeDates: 'Remove these dates',
     destinations: 'destinations', destination: 'destination', countries: 'countries',
     visited: 'visited', visitedP: 'visited', planned: 'planned', plannedP: 'planned',
     noDestinations: 'No destinations yet.<br>Add your first one!', noResults: 'No results.',
     statusLabelDone: 'Visited', statusLabelPlanned: 'Planned', statusLabelIdea: 'Idea',
     detailTravel: '✈ Travel time', detailBestMonths: '☀ Best months',
-    upcoming: 'Upcoming', past: 'Past', day: 'day', days: 'days',
+    upcoming: 'Upcoming', past: 'Past', day: 'day', days: 'days', dayShort: 'd', otherCountry: 'Other',
     confirmDelete: 'Delete "{name}"?',
     toastAccountCreated: 'Account created!', toastEnterName: 'Enter a destination name',
     toastEnterNameFirst: 'Enter a destination name first',
@@ -104,6 +109,7 @@ const I18N = {
     toastDeleted: 'Destination deleted', toastPhotoFound: 'Photo found!',
     toastNoPhoto: 'No photo found — paste a URL manually',
     toastSearchError: 'Search error',
+    toastSaveError: 'Error while saving', toastDeleteError: 'Error while deleting',
     toastMigrated: '{n} destination(s) recovered!', toastMigrationError: 'Error migrating data',
     errEmailAndPwd: 'Please enter your email and password.',
     errEmail: 'Please enter your email.', errPwd: 'Please enter your password.',
@@ -141,6 +147,11 @@ function applyTranslations() {
   });
   document.querySelectorAll('[data-i18n-ph]').forEach(el => {
     el.placeholder = t(el.getAttribute('data-i18n-ph'));
+  });
+  document.querySelectorAll('[data-i18n-aria]').forEach(el => {
+    const label = t(el.getAttribute('data-i18n-aria'));
+    el.setAttribute('aria-label', label);
+    if (el.hasAttribute('title')) el.title = label;
   });
   const langBtn = document.getElementById('lang-switch-btn');
   if (langBtn) langBtn.textContent = t('langSwitch');
@@ -251,7 +262,8 @@ const state = {
   _editLat: null,
   _editLng: null,
   _editCountryCode: null,
-  _editPhotoUrl: null
+  _editPhotoUrl: null,
+  _editGeoName: null
 };
 
 let mainMap = null;
@@ -260,6 +272,8 @@ let countriesLayer = null;
 let countriesGeoJson = null;
 let geocodeTimer = null;
 let confirmCallback = null;
+let unsubscribeDestinations = null;
+let migrationInProgress = false;
 
 // ============================================
 // INITIALIZATION
@@ -303,6 +317,9 @@ function initFirebase() {
   if (FIREBASE_CONFIG.apiKey) {
     try {
       firebase.initializeApp(FIREBASE_CONFIG);
+      // Keep data available offline; fails harmlessly with several tabs open
+      firebase.firestore().enablePersistence({ synchronizeTabs: true })
+        .catch(err => console.warn('Firestore persistence unavailable:', err.code));
       state.firebaseReady = true;
     } catch (e) {
       console.warn('Firebase init failed, using local storage', e);
@@ -311,6 +328,8 @@ function initFirebase() {
 }
 
 function checkAutoLogin() {
+  localStorage.removeItem('mv-accounts');
+  localStorage.removeItem('mv-user');
   if (state.firebaseReady) {
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
@@ -321,33 +340,12 @@ function checkAutoLogin() {
         });
       }
     });
-  } else {
-    const saved = localStorage.getItem('mv-user');
-    if (saved) {
-      enterApp(JSON.parse(saved));
-    }
   }
 }
 
 // ============================================
 // AUTH
 // ============================================
-
-async function hashPassword(password) {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(password + '_mv_salt_2026');
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-  return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
-}
-
-function getLocalAccounts() {
-  const raw = localStorage.getItem('mv-accounts');
-  return raw ? JSON.parse(raw) : {};
-}
-
-function saveLocalAccounts(accounts) {
-  localStorage.setItem('mv-accounts', JSON.stringify(accounts));
-}
 
 async function loginUser() {
   clearAuthError();
@@ -371,12 +369,7 @@ async function loginUser() {
       showAuthError(e.msg, e.fields);
     }
   } else {
-    const accounts = getLocalAccounts();
-    const account = accounts[email];
-    if (!account) return showAuthError(t('errNoAccount'), ['auth-email']);
-    const hash = await hashPassword(password);
-    if (account.passwordHash !== hash) return showAuthError(t('errWrongPwd'), ['auth-password']);
-    enterApp({ uid: account.uid, email, name: account.name });
+    showAuthError(t('errConnection'), []);
   }
 }
 
@@ -403,15 +396,7 @@ async function registerUser() {
       showAuthError(e.msg, e.fields);
     }
   } else {
-    const accounts = getLocalAccounts();
-    if (accounts[email]) return showAuthError(t('errAccountExists'), ['auth-email']);
-    const uid = 'local-' + Date.now();
-    const name = email.split('@')[0];
-    const passwordHash = await hashPassword(password);
-    accounts[email] = { uid, name, passwordHash };
-    saveLocalAccounts(accounts);
-    enterApp({ uid, email, name });
-    showToast(t('toastAccountCreated'));
+    showAuthError(t('errConnection'), []);
   }
 }
 
@@ -431,7 +416,7 @@ async function loginGoogle() {
       showAuthError(e.msg, e.fields);
     }
   } else {
-    enterApp({ uid: 'local-google-' + Date.now(), email: 'demo@mesvoyages.app', name: 'Voyageur' });
+    showAuthError(t('errConnection'), []);
   }
 }
 
@@ -440,8 +425,8 @@ function loginDemo() {
 }
 
 function enterApp(user, loadDemo = false) {
+  if (state.user && state.user.uid === user.uid) return;
   state.user = user;
-  localStorage.setItem('mv-user', JSON.stringify(user));
 
   // Update UI
   const initial = (user.name || user.email || 'U')[0].toUpperCase();
@@ -460,6 +445,10 @@ function enterApp(user, loadDemo = false) {
 }
 
 function logout() {
+  if (unsubscribeDestinations) {
+    unsubscribeDestinations();
+    unsubscribeDestinations = null;
+  }
   if (state.firebaseReady) firebase.auth().signOut();
   state.user = null;
   state.destinations = [];
@@ -468,7 +457,6 @@ function logout() {
   state.activeFilters = new Set(['done', 'planned', 'idea']);
   state.currentMonth = null;
   state.searchQuery = '';
-  localStorage.removeItem('mv-user');
   document.getElementById('app').classList.add('hidden');
   document.getElementById('auth-screen').classList.remove('hidden');
   document.getElementById('user-menu').classList.add('hidden');
@@ -527,8 +515,9 @@ function getFirebaseError(code) {
 
 function loadDestinations(loadDemo = false) {
   if (state.firebaseReady && state.user && state.user.uid !== 'demo') {
+    if (unsubscribeDestinations) unsubscribeDestinations();
     const db = firebase.firestore();
-    db.collection('users').doc(state.user.uid).collection('destinations')
+    unsubscribeDestinations = db.collection('users').doc(state.user.uid).collection('destinations')
       .orderBy('createdAt', 'desc')
       .onSnapshot(snapshot => {
         state.destinations = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -538,6 +527,8 @@ function loadDestinations(loadDemo = false) {
           if (loadDemo) { injectDemoData(); return; }
         }
         renderAll();
+      }, err => {
+        console.warn('Firestore listen error:', err);
       });
   } else {
     const saved = localStorage.getItem(getStorageKey());
@@ -552,15 +543,19 @@ function loadDestinations(loadDemo = false) {
 
 function migrateLocalData() {
   if (!state.firebaseReady || !state.user || state.user.uid === 'demo') return false;
+  if (migrationInProgress) return true;
 
   let localDests = [];
 
-  const allKeys = Object.keys(localStorage).filter(k => k.startsWith('mv-destinations'));
+  // Demo data is never migrated into a real account
+  const allKeys = Object.keys(localStorage)
+    .filter(k => k.startsWith('mv-destinations') && k !== 'mv-destinations-demo');
   for (const key of allKeys) {
     try {
       const data = JSON.parse(localStorage.getItem(key));
       if (Array.isArray(data) && data.length > 0) {
         data.forEach(d => {
+          if (String(d.id || '').startsWith('demo-')) return;
           if (!localDests.some(ld => ld.name === d.name)) localDests.push(d);
         });
       }
@@ -568,6 +563,7 @@ function migrateLocalData() {
   }
 
   if (localDests.length === 0) return false;
+  migrationInProgress = true;
 
   const db = firebase.firestore();
   const col = db.collection('users').doc(state.user.uid).collection('destinations');
@@ -580,10 +576,14 @@ function migrateLocalData() {
   });
 
   batch.commit().then(() => {
+    // Remove migrated local copies so they don't come back later
+    allKeys.forEach(k => localStorage.removeItem(k));
     showToast(t('toastMigrated', { n: localDests.length }));
   }).catch(err => {
     console.warn('Migration error:', err);
     showToast(t('toastMigrationError'));
+  }).finally(() => {
+    migrationInProgress = false;
   });
 
   return true;
@@ -809,7 +809,7 @@ function renderList() {
   // Group by country
   const countries = {};
   filtered.forEach(d => {
-    const c = d.country || 'Autres';
+    const c = d.country || t('otherCountry');
     if (!countries[c]) countries[c] = { code: d.countryCode, dests: [] };
     countries[c].dests.push(d);
   });
@@ -847,7 +847,7 @@ function renderDestRow(d) {
 
   // Photo
   const photoStyle = d.photoUrl
-    ? `background-image: url('${unsplashUrl(d.photoUrl, 'thumb')}')`
+    ? `background-image: url('${cssUrl(unsplashUrl(d.photoUrl, 'thumb'))}')`
     : '';
 
   // Subtitle: tags + flight + best months
@@ -870,7 +870,7 @@ function renderDestRow(d) {
       const days = getDaysBetween(trip.start, trip.end || trip.start);
       dateHtml = `
         <div class="dest-date ${dateClass}">${dateText}</div>
-        <div class="dest-meta">${days}j</div>
+        <div class="dest-meta">${days}${t('dayShort')}</div>
       `;
     }
   } else {
@@ -879,7 +879,7 @@ function renderDestRow(d) {
   }
 
   return `
-    <div class="dest-row ${status}" onclick="showDetail('${d.id}')">
+    <div class="dest-row ${status}" role="button" tabindex="0" onclick="showDetail('${d.id}')" onkeydown="onActivateKey(event, '${d.id}')">
       <div class="dest-photo" ${photoStyle ? `style="${photoStyle}"` : ''}></div>
       <div class="dest-info">
         <div class="dest-name">${escapeHtml(d.name)}</div>
@@ -1115,7 +1115,9 @@ function renderPlanning() {
       blocksHtml += `
         <div class="planning-trip-block ${status}"
              style="left:${left}%; width:${width}%"
+             role="button" tabindex="0"
              onclick="showDetail('${t.dest.id}')"
+             onkeydown="onActivateKey(event, '${t.dest.id}')"
              title="${escapeHtml(t.dest.name)}: ${formatDateShort(t.trip.start)} → ${formatDateShort(t.trip.end || t.trip.start)}">
           ${escapeHtml(t.dest.name)}<span class="planning-trip-dates">${dateLabel}</span>
         </div>
@@ -1131,7 +1133,7 @@ function renderPlanning() {
 
     gridHtml += `
       <div class="planning-month-row">
-        <div class="planning-month-label${isCurrent ? ' current' : ''}">${getMonthFull()[m].substring(0, 3)}.</div>
+        <div class="planning-month-label${isCurrent ? ' current' : ''}">${getMonthNames()[m]}</div>
         <div class="planning-days-bar">
           ${currentLine}
           ${blocksHtml}
@@ -1167,6 +1169,7 @@ function openAddModal() {
   state._editLng = null;
   state._editCountryCode = null;
   state._editPhotoUrl = null;
+  state._editGeoName = null;
 
   document.getElementById('modal-title').textContent = t('newDest');
   document.getElementById('dest-name').value = '';
@@ -1197,6 +1200,7 @@ function openEditModal(dest) {
   state._editLng = dest.lng;
   state._editCountryCode = dest.countryCode;
   state._editPhotoUrl = dest.photoUrl;
+  state._editGeoName = dest.name || '';
 
   document.getElementById('modal-title').textContent = t('editTitle');
   document.getElementById('dest-name').value = dest.name || '';
@@ -1230,6 +1234,7 @@ function closeModal() {
   state._editLng = null;
   state._editCountryCode = null;
   state._editPhotoUrl = null;
+  state._editGeoName = null;
 }
 
 function setStatus(status) {
@@ -1247,7 +1252,7 @@ function addDateRow(startVal, endVal) {
     <input type="date" class="date-start" value="${startVal || ''}">
     <span style="color:var(--text-muted);font-size:0.7rem;">→</span>
     <input type="date" class="date-end" value="${endVal || ''}">
-    <button type="button" class="date-row-remove" onclick="this.parentElement.remove()">✕</button>
+    <button type="button" class="date-row-remove" onclick="this.parentElement.remove()" aria-label="${t('removeDates')}">✕</button>
   `;
   container.appendChild(row);
 }
@@ -1256,11 +1261,20 @@ async function saveDestination() {
   const name = document.getElementById('dest-name').value.trim();
   if (!name) return showToast(t('toastEnterName'));
 
+  // Coordinates belong to a previous name: discard them and geocode again
+  if (state._editGeoName !== null && name !== state._editGeoName) {
+    state._editLat = null;
+    state._editLng = null;
+    state._editCountryCode = null;
+    document.getElementById('dest-country').value = '';
+  }
+
   let lat = state._editLat || 0;
   let lng = state._editLng || 0;
   let country = document.getElementById('dest-country').value.trim();
   let countryCode = state._editCountryCode || '';
   let photoUrl = document.getElementById('dest-photo').value.trim() || state._editPhotoUrl || '';
+  if (photoUrl && !/^https?:\/\//i.test(photoUrl)) photoUrl = '';
 
   // Auto-geocode if no coordinates
   if (!lat || !lng) {
@@ -1300,18 +1314,28 @@ async function saveDestination() {
     trips
   };
 
-  await saveDest(dest);
+  const isEdit = !!state.editingId;
+  // Firestore resolves only once the server acknowledges the write (never while
+  // offline); the snapshot listener already shows the local change, so don't wait.
+  saveDest(dest).catch(err => {
+    console.warn('Save error:', err);
+    showToast(t('toastSaveError'));
+  });
   closeModal();
-  showToast(state.editingId ? t('toastModified') : t('toastAdded'));
+  showToast(isEdit ? t('toastModified') : t('toastAdded'));
 }
 
 function deleteDestination() {
   if (!state.editingId) return;
   const dest = state.destinations.find(d => d.id === state.editingId);
-  const name = dest ? dest.name : 'cette destination';
+  const name = dest ? dest.name : '';
+  const id = state.editingId;
 
-  showConfirm(t('confirmDelete', { name }), async () => {
-    await deleteDest(state.editingId);
+  showConfirm(t('confirmDelete', { name }), () => {
+    deleteDest(id).catch(err => {
+      console.warn('Delete error:', err);
+      showToast(t('toastDeleteError'));
+    });
     closeModal();
     closeDetail();
     showToast(t('toastDeleted'));
@@ -1359,12 +1383,15 @@ function selectGeoSuggestion(idx) {
   const r = results[idx];
   const parts = r.display_name.split(',').map(p => p.trim());
 
-  document.getElementById('dest-name').value = parts[0] || r.display_name;
+  const chosenName = parts[0] || r.display_name;
+  document.getElementById('dest-name').value = chosenName;
   document.getElementById('dest-country').value = parts[parts.length - 1] || '';
   state._editLat = parseFloat(r.lat);
   state._editLng = parseFloat(r.lon);
+  state._editCountryCode = null;
+  state._editGeoName = chosenName;
 
-  fetchCountryCode(r.lat, r.lon);
+  fetchCountryCode(r.lat, r.lon, chosenName);
   el.classList.add('hidden');
 }
 
@@ -1394,10 +1421,11 @@ async function geocode(query) {
   return null;
 }
 
-async function fetchCountryCode(lat, lon) {
+async function fetchCountryCode(lat, lon, forName) {
   try {
     const res = await fetch(`${NOMINATIM_URL}/reverse?format=json&lat=${lat}&lon=${lon}&zoom=3&accept-language=fr`);
     const data = await res.json();
+    if (state._editGeoName !== forName) return;
     if (data.address?.country_code) {
       state._editCountryCode = data.address.country_code;
     }
@@ -1417,7 +1445,7 @@ function onPhotoUrlInput() {
 function updatePhotoPreview(url) {
   const preview = document.getElementById('photo-preview');
   if (url) {
-    preview.style.backgroundImage = `url('${url}')`;
+    preview.style.backgroundImage = `url('${cssUrl(url)}')`;
     preview.classList.remove('hidden');
   } else {
     preview.classList.add('hidden');
@@ -1485,15 +1513,15 @@ function showDetail(id) {
   // Photo
   const photoEl = document.getElementById('detail-photo');
   photoEl.style.backgroundImage = dest.photoUrl
-    ? `url('${unsplashUrl(dest.photoUrl, 'detail')}')`
+    ? `url('${cssUrl(unsplashUrl(dest.photoUrl, 'detail'))}')`
     : 'none';
 
   // Body content
   const status = dest.status || 'idea';
   const statusLabels = { done: t('statusDone'), planned: t('statusPlanned'), idea: t('statusIdea') };
 
-  const tagsHtml = (dest.tags || []).map(t =>
-    `<span class="detail-tag">${escapeHtml(t)}</span>`
+  const tagsHtml = (dest.tags || []).map(tag =>
+    `<span class="detail-tag">${escapeHtml(tag)}</span>`
   ).join('');
 
   let infoRows = '';
@@ -1507,11 +1535,11 @@ function showDetail(id) {
   let datesHtml = '';
   if (dest.trips && dest.trips.length > 0) {
     const today = todayStr();
-    datesHtml = dest.trips.map(t => {
-      const isFuture = t.start >= today;
-      const start = formatDateLong(t.start);
-      const end = t.end && t.end !== t.start ? ' → ' + formatDateLong(t.end) : '';
-      const days = getDaysBetween(t.start, t.end || t.start);
+    datesHtml = dest.trips.map(trip => {
+      const isFuture = trip.start >= today;
+      const start = formatDateLong(trip.start);
+      const end = trip.end && trip.end !== trip.start ? ' → ' + formatDateLong(trip.end) : '';
+      const days = getDaysBetween(trip.start, trip.end || trip.start);
       return `
         <div class="detail-info-row">
           <span class="detail-info-label">📅 ${isFuture ? t('upcoming') : t('past')}</span>
@@ -1532,6 +1560,14 @@ function showDetail(id) {
   `;
 
   document.getElementById('detail-overlay').classList.remove('hidden');
+}
+
+// Enter / Space on a focusable row opens its detail
+function onActivateKey(event, id) {
+  if (event.key === 'Enter' || event.key === ' ') {
+    event.preventDefault();
+    showDetail(id);
+  }
 }
 
 function closeDetail() {
@@ -1622,11 +1658,17 @@ function formatDateLong(dateStr) {
 function getDaysBetween(start, end) {
   const s = new Date(start + 'T00:00:00');
   const e = new Date(end + 'T00:00:00');
-  return Math.max(1, Math.ceil((e - s) / (1000 * 60 * 60 * 24)));
+  return Math.max(1, Math.round((e - s) / (1000 * 60 * 60 * 24)) + 1);
 }
 
 function todayStr() {
-  return new Date().toISOString().split('T')[0];
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+// Percent-encode characters that could break out of url('...') or a style attribute
+function cssUrl(url) {
+  return String(url || '').replace(/["'()\\\s<>]/g, c => '%' + c.charCodeAt(0).toString(16).padStart(2, '0'));
 }
 
 function unsplashUrl(url, size) {
@@ -1661,6 +1703,7 @@ window.addDateRow = addDateRow;
 window.saveDestination = saveDestination;
 window.deleteDestination = deleteDestination;
 window.showDetail = showDetail;
+window.onActivateKey = onActivateKey;
 window.closeDetail = closeDetail;
 window.editFromDetail = editFromDetail;
 window.confirmOk = confirmOk;
