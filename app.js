@@ -26,7 +26,7 @@ const I18N = {
   fr: {
     appTitle: 'Mes Voyages', appSubtitle: 'Planifiez vos prochaines aventures',
     emailPh: 'Email', passwordPh: 'Mot de passe',
-    login: 'Se connecter', register: 'Créer un compte', or: 'ou',
+    login: 'Se connecter', register: 'Créer un compte', or: 'ou', forgot: 'Mot de passe oublié ?',
     googleLogin: 'Continuer avec Google', demoMode: 'Explorer en mode démo',
     logout: 'Se déconnecter', langSwitch: 'English',
     searchPh: 'Rechercher…',
@@ -71,6 +71,8 @@ const I18N = {
     errInvalidEmail: "L'adresse email n'est pas valide.",
     errTooMany: 'Trop de tentatives. Veuillez réessayer dans quelques minutes.',
     errPopupClosed: 'Connexion annulée.', errConnection: 'Erreur de connexion. Veuillez réessayer.',
+    errResetEmail: 'Saisissez votre email ci-dessus, puis cliquez à nouveau « Mot de passe oublié ? ».',
+    resetSent: 'Email de réinitialisation envoyé ! Vérifiez votre boîte de réception (et les spams).',
     monthNames: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'],
     monthFull: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
     locale: 'fr-FR'
@@ -78,7 +80,7 @@ const I18N = {
   en: {
     appTitle: 'My Trips', appSubtitle: 'Plan your next adventures',
     emailPh: 'Email', passwordPh: 'Password',
-    login: 'Log in', register: 'Create account', or: 'or',
+    login: 'Log in', register: 'Create account', or: 'or', forgot: 'Forgot password?',
     googleLogin: 'Continue with Google', demoMode: 'Explore in demo mode',
     logout: 'Log out', langSwitch: 'Français',
     searchPh: 'Search…',
@@ -123,6 +125,8 @@ const I18N = {
     errInvalidEmail: 'Invalid email address.',
     errTooMany: 'Too many attempts. Please try again in a few minutes.',
     errPopupClosed: 'Login cancelled.', errConnection: 'Connection error. Please try again.',
+    errResetEmail: 'Enter your email above, then click "Forgot password?" again.',
+    resetSent: 'Password reset email sent! Check your inbox (and spam).',
     monthNames: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
     monthFull: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
     locale: 'en-US'
@@ -420,6 +424,25 @@ async function loginGoogle() {
   }
 }
 
+async function resetPassword() {
+  clearAuthError();
+  const email = document.getElementById('auth-email').value.trim().toLowerCase();
+  if (!email) return showAuthError(t('errResetEmail'), ['auth-email']);
+
+  if (state.firebaseReady) {
+    try {
+      firebase.auth().languageCode = currentLang;
+      await firebase.auth().sendPasswordResetEmail(email);
+      showAuthSuccess(t('resetSent'));
+    } catch (err) {
+      const e = getFirebaseError(err.code);
+      showAuthError(e.msg, e.fields);
+    }
+  } else {
+    showAuthError(t('errConnection'), []);
+  }
+}
+
 function loginDemo() {
   enterApp({ uid: 'demo', email: 'demo@mesvoyages.app', name: 'Voyageur' }, true);
 }
@@ -489,8 +512,16 @@ function showAuthError(message, highlightFields) {
   form.classList.add('shake');
 }
 
+function showAuthSuccess(message) {
+  const el = document.getElementById('auth-error');
+  el.textContent = message;
+  el.classList.add('success');
+  el.classList.remove('hidden');
+}
+
 function clearAuthError() {
   document.getElementById('auth-error').classList.add('hidden');
+  document.getElementById('auth-error').classList.remove('success');
   document.getElementById('auth-email').classList.remove('error');
   document.getElementById('auth-password').classList.remove('error');
 }
@@ -1684,6 +1715,7 @@ window.clearAuthError = clearAuthError;
 window.loginUser = loginUser;
 window.registerUser = registerUser;
 window.loginGoogle = loginGoogle;
+window.resetPassword = resetPassword;
 window.loginDemo = loginDemo;
 window.logout = logout;
 window.toggleUserMenu = toggleUserMenu;

@@ -69,6 +69,7 @@ body {
   display: flex; align-items: center; justify-content: center; gap: 8px;
 }
 .auth-btn.skip { background: transparent; color: var(--text-secondary); font-weight: 500; }
+.auth-btn.forgot { background: transparent; color: var(--accent); font-weight: 500; padding: 4px; font-size: 0.8rem; }
 
 .auth-error {
   text-align: left; font-size: 0.8rem; color: #DC2626;
@@ -76,6 +77,7 @@ body {
   border-radius: var(--radius-sm); padding: 10px 12px;
   line-height: 1.4;
 }
+.auth-error.success { color: #15803D; background: #F0FDF4; border-color: #BBF7D0; }
 .auth-input.error { border-color: #DC2626; }
 .auth-form.shake {
   animation: shake 0.4s ease-in-out;
