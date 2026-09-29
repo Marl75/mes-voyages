@@ -1,8 +1,9 @@
-const CACHE_NAME = 'mes-voyages-v18';
+const CACHE_NAME = 'mes-voyages-v19';
 const STATIC_ASSETS = [
   './',
   './index.html',
   './style.css',
+  './logic.js',
   './app.js',
   './icons/icon-192.png',
   './icons/icon-512.png',

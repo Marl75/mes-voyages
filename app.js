@@ -27,18 +27,30 @@ const I18N = {
     appTitle: 'Mes Voyages', appSubtitle: 'Planifiez vos prochaines aventures',
     emailPh: 'Email', passwordPh: 'Mot de passe',
     login: 'Se connecter', register: 'Créer un compte', or: 'ou', forgot: 'Mot de passe oublié ?',
-    googleLogin: 'Continuer avec Google', demoMode: 'Explorer en mode démo',
+    googleLogin: 'Continuer avec Google',
     logout: 'Se déconnecter', langSwitch: 'English',
     searchPh: 'Rechercher…',
     filterAll: 'Tous', filterDone: 'Visités', filterPlanned: 'Planifiés', filterIdea: 'Idées',
-    navMap: 'Carte', navList: 'Liste', navPlanning: 'Planning',
+    navMap: 'Carte', navList: 'Liste', navPlanning: 'Planning', navStats: 'Stats',
+    modeTrips: 'Mes voyages', modeBest: 'Idéal pour partir',
+    sortLabel: 'Trier', sortCountry: 'Par pays', sortDate: 'Par date',
+    sectionUpcoming: 'À venir', sectionPast: 'Passés', sectionUndated: 'Sans date',
+    noBestMonth: 'Aucune destination idéale en {month}.<br>Renseignez les « Meilleurs mois » de vos destinations.',
+    nextTrip: 'Prochain voyage', nowTravelling: 'En ce moment',
+    inDays: 'dans {n} jours', tomorrow: 'demain', ongoingDay: 'jour {n} sur {total}',
+    allYear: "Toute l'année",
+    statCountry: 'pays visité', statCountries: 'pays visités', statWorld: '{pct} % du monde',
+    statVisited: 'destination visitée', statVisitedP: 'destinations visitées', statOf: 'sur {n} au total',
+    statDaysYear: 'jours de voyage en {year}', statDaysPlanned: '+ {n} prévus d’ici fin d’année',
+    statUpcoming: 'voyage à venir', statUpcomingP: 'voyages à venir', statIdeas: '{n} idée(s) en réserve',
+    statDaysPerYear: 'Jours de voyage par an', statVisitedCountries: 'Pays visités', statWishCountries: 'Pays à découvrir',
     newDest: 'Nouvelle destination', editTitle: 'Modifier',
     labelDest: 'Destination', labelCountry: 'Pays', labelStatus: 'Statut',
     labelNotes: 'Notes', labelTags: 'Tags', labelPhoto: 'Photo',
     labelTravelTime: 'Temps de trajet', labelBestMonths: 'Meilleurs mois', labelDates: 'Dates de voyage',
     destPh: 'Ex: Santorini', countryPh: 'Auto-détecté…', notesPh: 'Vos notes…',
     tagsPh: 'Ex: plage, culture, gastro', photoPh: 'URL de la photo ou recherche auto…',
-    travelTimePh: 'Ex: 3h30', bestMonthsPh: 'Ex: avr–oct',
+    travelTimePh: 'Ex: 3h30',
     statusIdea: '💡 Idée', statusPlanned: '📅 Planifié', statusDone: '✅ Visité',
     addDates: '+ Ajouter des dates', btnDelete: 'Supprimer', save: 'Enregistrer',
     edit: 'Modifier', cancel: 'Annuler',
@@ -81,18 +93,30 @@ const I18N = {
     appTitle: 'My Trips', appSubtitle: 'Plan your next adventures',
     emailPh: 'Email', passwordPh: 'Password',
     login: 'Log in', register: 'Create account', or: 'or', forgot: 'Forgot password?',
-    googleLogin: 'Continue with Google', demoMode: 'Explore in demo mode',
+    googleLogin: 'Continue with Google',
     logout: 'Log out', langSwitch: 'Français',
     searchPh: 'Search…',
     filterAll: 'All', filterDone: 'Visited', filterPlanned: 'Planned', filterIdea: 'Ideas',
-    navMap: 'Map', navList: 'List', navPlanning: 'Timeline',
+    navMap: 'Map', navList: 'List', navPlanning: 'Timeline', navStats: 'Stats',
+    modeTrips: 'My trips', modeBest: 'Best time to go',
+    sortLabel: 'Sort', sortCountry: 'By country', sortDate: 'By date',
+    sectionUpcoming: 'Upcoming', sectionPast: 'Past', sectionUndated: 'No dates',
+    noBestMonth: 'No destination is ideal in {month}.<br>Fill in the "Best months" of your destinations.',
+    nextTrip: 'Next trip', nowTravelling: 'Travelling now',
+    inDays: 'in {n} days', tomorrow: 'tomorrow', ongoingDay: 'day {n} of {total}',
+    allYear: 'All year',
+    statCountry: 'country visited', statCountries: 'countries visited', statWorld: '{pct}% of the world',
+    statVisited: 'destination visited', statVisitedP: 'destinations visited', statOf: 'out of {n}',
+    statDaysYear: 'travel days in {year}', statDaysPlanned: '+ {n} planned by year end',
+    statUpcoming: 'upcoming trip', statUpcomingP: 'upcoming trips', statIdeas: '{n} idea(s) in store',
+    statDaysPerYear: 'Travel days per year', statVisitedCountries: 'Countries visited', statWishCountries: 'Countries to discover',
     newDest: 'New destination', editTitle: 'Edit',
     labelDest: 'Destination', labelCountry: 'Country', labelStatus: 'Status',
     labelNotes: 'Notes', labelTags: 'Tags', labelPhoto: 'Photo',
     labelTravelTime: 'Travel time', labelBestMonths: 'Best months', labelDates: 'Travel dates',
     destPh: 'e.g. Santorini', countryPh: 'Auto-detected…', notesPh: 'Your notes…',
     tagsPh: 'e.g. beach, culture, food', photoPh: 'Photo URL or auto search…',
-    travelTimePh: 'e.g. 3h30', bestMonthsPh: 'e.g. Apr–Oct',
+    travelTimePh: 'e.g. 3h30',
     statusIdea: '💡 Idea', statusPlanned: '📅 Planned', statusDone: '✅ Visited',
     addDates: '+ Add dates', btnDelete: 'Delete', save: 'Save',
     edit: 'Edit', cancel: 'Cancel',
@@ -171,81 +195,6 @@ function toggleLanguage() {
   document.getElementById('user-menu').classList.add('hidden');
 }
 
-const DEMO_DESTINATIONS = [
-  {
-    id: 'demo-1', name: 'Santorini', country: 'Grèce', countryCode: 'gr',
-    lat: 36.3932, lng: 25.4615, status: 'done',
-    notes: "Villages blancs perchés sur la caldeira, couchers de soleil à Oia, plages volcaniques noires.",
-    tags: ['plage', 'romantique', 'photogénique'],
-    flightTime: '3h30', bestMonths: 'mai–oct',
-    photoUrl: 'https://images.unsplash.com/photo-1613395877344-13d4a8e0d49e',
-    trips: [{ start: '2024-09-10', end: '2024-09-17' }]
-  },
-  {
-    id: 'demo-2', name: 'Kyoto', country: 'Japon', countryCode: 'jp',
-    lat: 35.0116, lng: 135.7681, status: 'done',
-    notes: "Temples dorés, bambouseraie d'Arashiyama, quartier des geishas à Gion.",
-    tags: ['culture', 'temples', 'gastronomie'],
-    flightTime: '12h', bestMonths: 'mar–mai, oct–nov',
-    photoUrl: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e',
-    trips: [{ start: '2025-03-25', end: '2025-04-05' }]
-  },
-  {
-    id: 'demo-3', name: 'Marrakech', country: 'Maroc', countryCode: 'ma',
-    lat: 31.6295, lng: -7.9811, status: 'planned',
-    notes: "Médina, Jardin Majorelle, souks colorés, riads traditionnels.",
-    tags: ['culture', 'gastronomie', 'artisanat'],
-    flightTime: '3h15', bestMonths: 'mar–mai, sept–nov',
-    photoUrl: 'https://images.unsplash.com/photo-1597212618440-806262de4f6b',
-    trips: [{ start: '2026-10-15', end: '2026-10-22' }]
-  },
-  {
-    id: 'demo-4', name: 'Lisbonne', country: 'Portugal', countryCode: 'pt',
-    lat: 38.7223, lng: -9.1393, status: 'idea',
-    notes: "Tramway 28, pastéis de nata, quartier de l'Alfama, azulejos.",
-    tags: ['ville', 'gastronomie', 'abordable'],
-    flightTime: '2h30', bestMonths: 'avr–oct',
-    photoUrl: 'https://images.unsplash.com/photo-1585208798174-6cedd86e019a',
-    trips: []
-  },
-  {
-    id: 'demo-5', name: 'Cinque Terre', country: 'Italie', countryCode: 'it',
-    lat: 44.1461, lng: 9.6439, status: 'planned',
-    notes: "Randonnée entre les cinq villages colorés, pesto frais, baignade.",
-    tags: ['randonnée', 'plage', 'photogénique'],
-    flightTime: '2h', bestMonths: 'mai–sept',
-    photoUrl: 'https://images.unsplash.com/photo-1516483638261-f4dbaf036963',
-    trips: [{ start: '2026-06-01', end: '2026-06-07' }]
-  },
-  {
-    id: 'demo-6', name: 'Tokyo', country: 'Japon', countryCode: 'jp',
-    lat: 35.6762, lng: 139.6503, status: 'done',
-    notes: "Shibuya, Akihabara, Tsukiji, Shinjuku. Contraste tradition/modernité.",
-    tags: ['ville', 'gastronomie', 'culture'],
-    flightTime: '12h', bestMonths: 'mar–mai, oct–nov',
-    photoUrl: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf',
-    trips: [{ start: '2025-04-06', end: '2025-04-12' }]
-  },
-  {
-    id: 'demo-7', name: 'Amalfi', country: 'Italie', countryCode: 'it',
-    lat: 40.6333, lng: 14.6029, status: 'idea',
-    notes: "Positano, Ravello, limoncello, routes vertigineuses.",
-    tags: ['plage', 'romantique', 'gastronomie'],
-    flightTime: '2h15', bestMonths: 'mai–sept',
-    photoUrl: 'https://images.unsplash.com/photo-1455587734955-081b22074882',
-    trips: []
-  },
-  {
-    id: 'demo-8', name: 'Reykjavik', country: 'Islande', countryCode: 'is',
-    lat: 64.1466, lng: -21.9426, status: 'planned',
-    notes: "Aurores boréales, Blue Lagoon, cercle d'or, cascades spectaculaires.",
-    tags: ['nature', 'aventure', 'unique'],
-    flightTime: '3h45', bestMonths: 'juin–août',
-    photoUrl: 'https://images.unsplash.com/photo-1504829857797-ddff29c27927',
-    trips: [{ start: '2026-12-20', end: '2026-12-30' }]
-  }
-];
-
 // ============================================
 // STATE
 // ============================================
@@ -256,6 +205,9 @@ const state = {
   currentView: 'list',
   activeFilters: new Set(['done', 'planned', 'idea']),
   currentMonth: null,
+  monthMode: 'trips',
+  filterYear: new Date().getFullYear(),
+  sortMode: (() => { try { return localStorage.getItem('mv-sort') || 'country'; } catch (e) { return 'country'; } })(),
   searchQuery: '',
   planningYear: new Date().getFullYear(),
   editingId: null,
@@ -267,7 +219,8 @@ const state = {
   _editLng: null,
   _editCountryCode: null,
   _editPhotoUrl: null,
-  _editGeoName: null
+  _editGeoName: null,
+  _editBestMonths: new Set()
 };
 
 let mainMap = null;
@@ -332,8 +285,8 @@ function initFirebase() {
 }
 
 function checkAutoLogin() {
-  localStorage.removeItem('mv-accounts');
-  localStorage.removeItem('mv-user');
+  // Leftovers of removed features (local accounts, demo mode)
+  ['mv-accounts', 'mv-user', 'mv-destinations-demo'].forEach(k => localStorage.removeItem(k));
   if (state.firebaseReady) {
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
@@ -443,11 +396,7 @@ async function resetPassword() {
   }
 }
 
-function loginDemo() {
-  enterApp({ uid: 'demo', email: 'demo@mesvoyages.app', name: 'Voyageur' }, true);
-}
-
-function enterApp(user, loadDemo = false) {
+function enterApp(user) {
   if (state.user && state.user.uid === user.uid) return;
   state.user = user;
 
@@ -461,7 +410,7 @@ function enterApp(user, loadDemo = false) {
   document.getElementById('app').classList.remove('hidden');
 
   // Load data
-  loadDestinations(loadDemo);
+  loadDestinations();
 
   // Init map lazily
   setTimeout(() => initMap(), 300);
@@ -479,6 +428,8 @@ function logout() {
   state.detailId = null;
   state.activeFilters = new Set(['done', 'planned', 'idea']);
   state.currentMonth = null;
+  state.monthMode = 'trips';
+  state.filterYear = new Date().getFullYear();
   state.searchQuery = '';
   document.getElementById('app').classList.add('hidden');
   document.getElementById('auth-screen').classList.remove('hidden');
@@ -544,36 +495,23 @@ function getFirebaseError(code) {
 // DATA LAYER
 // ============================================
 
-function loadDestinations(loadDemo = false) {
-  if (state.firebaseReady && state.user && state.user.uid !== 'demo') {
-    if (unsubscribeDestinations) unsubscribeDestinations();
-    const db = firebase.firestore();
-    unsubscribeDestinations = db.collection('users').doc(state.user.uid).collection('destinations')
-      .orderBy('createdAt', 'desc')
-      .onSnapshot(snapshot => {
-        state.destinations = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        if (state.destinations.length === 0) {
-          const migrated = migrateLocalData();
-          if (migrated) return;
-          if (loadDemo) { injectDemoData(); return; }
-        }
-        renderAll();
-      }, err => {
-        console.warn('Firestore listen error:', err);
-      });
-  } else {
-    const saved = localStorage.getItem(getStorageKey());
-    state.destinations = saved ? JSON.parse(saved) : [];
-    if (state.destinations.length === 0 || loadDemo) {
-      injectDemoData();
-    } else {
+function loadDestinations() {
+  if (!state.firebaseReady || !state.user) return;
+  if (unsubscribeDestinations) unsubscribeDestinations();
+  const db = firebase.firestore();
+  unsubscribeDestinations = db.collection('users').doc(state.user.uid).collection('destinations')
+    .orderBy('createdAt', 'desc')
+    .onSnapshot(snapshot => {
+      state.destinations = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      if (state.destinations.length === 0 && migrateLocalData()) return;
       renderAll();
-    }
-  }
+    }, err => {
+      console.warn('Firestore listen error:', err);
+    });
 }
 
 function migrateLocalData() {
-  if (!state.firebaseReady || !state.user || state.user.uid === 'demo') return false;
+  if (!state.firebaseReady || !state.user) return false;
   if (migrationInProgress) return true;
 
   let localDests = [];
@@ -620,58 +558,22 @@ function migrateLocalData() {
   return true;
 }
 
-function injectDemoData() {
-  DEMO_DESTINATIONS.forEach(demo => {
-    const exists = state.destinations.some(d => d.id === demo.id || d.name === demo.name);
-    if (!exists) state.destinations.push({ ...demo });
-  });
-  saveToStorage();
-  renderAll();
+function destinationsCollection() {
+  return firebase.firestore().collection('users').doc(state.user.uid).collection('destinations');
 }
 
 function saveDest(dest) {
-  if (state.firebaseReady && state.user && state.user.uid !== 'demo') {
-    const db = firebase.firestore();
-    const col = db.collection('users').doc(state.user.uid).collection('destinations');
-    if (dest.id && !dest.id.startsWith('demo-') && !dest.id.startsWith('local-')) {
-      return col.doc(dest.id).update({ ...dest, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
-    } else {
-      const { id, ...data } = dest;
-      return col.add({ ...data, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
-    }
-  } else {
-    if (!dest.id) dest.id = 'local-' + Date.now();
-    const idx = state.destinations.findIndex(d => d.id === dest.id);
-    if (idx >= 0) {
-      state.destinations[idx] = dest;
-    } else {
-      state.destinations.unshift(dest);
-    }
-    saveToStorage();
-    renderAll();
-    return Promise.resolve();
+  if (!state.firebaseReady || !state.user) return Promise.reject(new Error('Not connected'));
+  const { id, ...data } = dest;
+  if (id) {
+    return destinationsCollection().doc(id).update({ ...data, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
   }
+  return destinationsCollection().add({ ...data, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
 }
 
 function deleteDest(id) {
-  if (state.firebaseReady && state.user && state.user.uid !== 'demo') {
-    return firebase.firestore()
-      .collection('users').doc(state.user.uid)
-      .collection('destinations').doc(id).delete();
-  } else {
-    state.destinations = state.destinations.filter(d => d.id !== id);
-    saveToStorage();
-    renderAll();
-    return Promise.resolve();
-  }
-}
-
-function getStorageKey() {
-  return state.user ? 'mv-destinations-' + state.user.uid : 'mv-destinations';
-}
-
-function saveToStorage() {
-  localStorage.setItem(getStorageKey(), JSON.stringify(state.destinations));
+  if (!state.firebaseReady || !state.user) return Promise.reject(new Error('Not connected'));
+  return destinationsCollection().doc(id).delete();
 }
 
 // ============================================
@@ -703,6 +605,7 @@ function switchView(view) {
   }
   if (view === 'list') renderList();
   if (view === 'planning') renderPlanning();
+  if (view === 'stats') renderStats();
 }
 
 // ============================================
@@ -744,47 +647,38 @@ function onSearch() {
 
 function setMonthFilter(month) {
   state.currentMonth = (state.currentMonth === month) ? null : month;
-  document.querySelectorAll('.month-btn').forEach(btn => {
-    btn.classList.toggle('active', parseInt(btn.dataset.month) === state.currentMonth);
-  });
+  updateMonthBar();
+  renderList();
+}
+
+// 'trips': trips taken that month of filterYear — 'best': destinations ideal that month
+function setMonthMode(mode) {
+  state.monthMode = mode;
+  updateMonthBar();
+  renderList();
+}
+
+function changeFilterYear(delta) {
+  state.filterYear += delta;
+  updateMonthBar();
+  renderList();
+}
+
+function setSortMode(mode) {
+  state.sortMode = mode;
+  try { localStorage.setItem('mv-sort', mode); } catch (e) { /* ignore */ }
   renderList();
 }
 
 function getFilteredDestinations() {
-  let list = [...state.destinations];
-
-  // Status filter
-  if (state.activeFilters.size < 3) {
-    list = list.filter(d => state.activeFilters.has(d.status || 'idea'));
-  }
-
-  // Month filter
-  if (state.currentMonth !== null) {
-    list = list.filter(d => {
-      if (!d.trips || d.trips.length === 0) return false;
-      return d.trips.some(t => {
-        const s = new Date(t.start + 'T00:00:00');
-        const e = t.end ? new Date(t.end + 'T00:00:00') : s;
-        // Check all months the trip spans
-        const cur = new Date(s);
-        while (cur <= e) {
-          if (cur.getMonth() === state.currentMonth) return true;
-          cur.setMonth(cur.getMonth() + 1, 1);
-        }
-        return false;
-      });
-    });
-  }
-
-  // Search
-  if (state.searchQuery) {
-    list = list.filter(d => {
-      const haystack = [d.name, d.country, d.notes, ...(d.tags || []), d.flightTime, d.bestMonths].join(' ').toLowerCase();
-      return haystack.includes(state.searchQuery);
-    });
-  }
-
-  return list;
+  return filterDestinations(state.destinations, {
+    statuses: state.activeFilters,
+    month: state.currentMonth,
+    monthMode: state.monthMode,
+    year: state.filterYear,
+    query: state.searchQuery,
+    bestMonthsText: bestMonthsLabel
+  });
 }
 
 // ============================================
@@ -793,30 +687,67 @@ function getFilteredDestinations() {
 
 function renderMonthBar() {
   const bar = document.getElementById('month-bar');
-  const now = new Date();
-  bar.innerHTML = getMonthNames().map((name, i) => {
-    const isCurrent = i === now.getMonth();
-    return `<button class="month-btn${isCurrent ? ' current' : ''}" data-month="${i}" onclick="setMonthFilter(${i})">${name}</button>`;
-  }).join('');
+  bar.innerHTML = getMonthNames().map((name, i) =>
+    `<button class="month-btn" data-month="${i}" onclick="setMonthFilter(${i})" aria-pressed="false">${name}</button>`
+  ).join('');
+  updateMonthBar();
 }
 
-function updateMonthBarTrips() {
+function updateMonthBar() {
+  const now = new Date();
+  const tripsMode = state.monthMode === 'trips';
+
+  document.querySelectorAll('.month-controls .segment').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.mode === state.monthMode);
+  });
+  document.getElementById('month-year').classList.toggle('hidden', !tripsMode);
+  document.getElementById('filter-year').textContent = state.filterYear;
+
+  // Months with something to show get a stronger color
+  const highlighted = tripsMode
+    ? monthsWithTrips(state.destinations, state.filterYear)
+    : new Set(state.destinations.flatMap(d => parseBestMonths(d.bestMonths)));
+
   document.querySelectorAll('.month-btn').forEach(btn => {
     const m = parseInt(btn.dataset.month);
-    const hasTrip = state.destinations.some(d =>
-      (d.trips || []).some(t => {
-        const s = new Date(t.start + 'T00:00:00');
-        const e = t.end ? new Date(t.end + 'T00:00:00') : s;
-        const cur = new Date(s);
-        while (cur <= e) {
-          if (cur.getMonth() === m) return true;
-          cur.setMonth(cur.getMonth() + 1, 1);
-        }
-        return false;
-      })
-    );
-    btn.classList.toggle('has-trip', hasTrip);
+    const active = m === state.currentMonth;
+    btn.classList.toggle('active', active);
+    btn.setAttribute('aria-pressed', active);
+    btn.classList.toggle('has-trip', highlighted.has(m));
+    btn.classList.toggle('current', m === now.getMonth() && (!tripsMode || state.filterYear === now.getFullYear()));
   });
+}
+
+// ============================================
+// NEXT TRIP BANNER
+// ============================================
+
+function renderNextTrip() {
+  const el = document.getElementById('next-trip');
+  const next = getNextTrip(state.destinations, todayStr());
+  if (!next) { el.innerHTML = ''; return; }
+
+  const { dest, trip } = next;
+  let when;
+  if (next.ongoing) when = t('ongoingDay', { n: next.dayIndex, total: next.totalDays });
+  else if (next.daysUntil === 1) when = t('tomorrow');
+  else when = t('inDays', { n: next.daysUntil });
+
+  const dates = formatDateShort(trip.start) + (trip.end && trip.end !== trip.start ? ' → ' + formatDateShort(trip.end) : '');
+  const photo = dest.photoUrl ? `style="background-image: url('${cssUrl(unsplashUrl(dest.photoUrl, 'thumb'))}')"` : '';
+
+  el.innerHTML = `
+    <div class="next-trip ${next.ongoing ? 'ongoing' : ''}" role="button" tabindex="0"
+         onclick="showDetail('${dest.id}')" onkeydown="onActivateKey(event, '${dest.id}')">
+      <div class="dest-photo" ${photo}></div>
+      <div class="next-trip-info">
+        <div class="next-trip-label">${next.ongoing ? t('nowTravelling') : t('nextTrip')}</div>
+        <div class="next-trip-name">${getFlag(dest.countryCode)} ${escapeHtml(dest.name)}</div>
+        <div class="next-trip-dates">${dates}</div>
+      </div>
+      <div class="next-trip-when">${when}</div>
+    </div>
+  `;
 }
 
 // ============================================
@@ -824,86 +755,103 @@ function updateMonthBarTrips() {
 // ============================================
 
 function renderList() {
+  renderNextTrip();
   const container = document.getElementById('list-content');
   const filtered = getFilteredDestinations();
 
   if (filtered.length === 0) {
+    let message = t('noResults');
+    if (state.destinations.length === 0) message = t('noDestinations');
+    else if (state.currentMonth !== null && state.monthMode === 'best') {
+      message = t('noBestMonth', { month: getMonthFull()[state.currentMonth].toLowerCase() });
+    }
     container.innerHTML = `
       <div class="list-empty">
         <div class="list-empty-icon">🌍</div>
-        <p>${state.destinations.length === 0 ? t('noDestinations') : t('noResults')}</p>
+        <p>${message}</p>
       </div>
     `;
     return;
   }
 
-  // Group by country
-  const countries = {};
-  filtered.forEach(d => {
-    const c = d.country || t('otherCountry');
-    if (!countries[c]) countries[c] = { code: d.countryCode, dests: [] };
-    countries[c].dests.push(d);
-  });
-
-  const sorted = Object.entries(countries).sort((a, b) => a[0].localeCompare(b[0], currentLang));
-  // Sort destinations within each country alphabetically
-  sorted.forEach(([, data]) => {
-    data.dests.sort((a, b) => (a.name || '').localeCompare(b.name || '', currentLang));
-  });
-
-  // Stats
+  const countryCt = new Set(filtered.map(d => d.country || t('otherCountry'))).size;
   const doneCt = filtered.filter(d => d.status === 'done').length;
   const plannedCt = filtered.filter(d => d.status === 'planned').length;
-  const countryCt = sorted.length;
 
   let html = `
-    <div class="list-stats">
-      <span><strong>${filtered.length}</strong> ${filtered.length > 1 ? t('destinations') : t('destination')}</span>
-      <span><strong>${countryCt}</strong> ${t('countries')}</span>
-      <span><strong>${doneCt}</strong> ${doneCt > 1 ? t('visitedP') : t('visited')}</span>
-      <span><strong>${plannedCt}</strong> ${plannedCt > 1 ? t('plannedP') : t('planned')}</span>
+    <div class="list-toolbar">
+      <div class="list-stats">
+        <span><strong>${filtered.length}</strong> ${filtered.length > 1 ? t('destinations') : t('destination')}</span>
+        <span><strong>${countryCt}</strong> ${t('countries')}</span>
+        <span><strong>${doneCt}</strong> ${doneCt > 1 ? t('visitedP') : t('visited')}</span>
+        <span><strong>${plannedCt}</strong> ${plannedCt > 1 ? t('plannedP') : t('planned')}</span>
+      </div>
+      <div class="segmented small" role="group" aria-label="${t('sortLabel')}">
+        <button class="segment ${state.sortMode === 'country' ? 'active' : ''}" onclick="setSortMode('country')">${t('sortCountry')}</button>
+        <button class="segment ${state.sortMode === 'date' ? 'active' : ''}" onclick="setSortMode('date')">${t('sortDate')}</button>
+      </div>
     </div>
   `;
 
-  sorted.forEach(([country, data]) => {
-    html += `<div class="country-sep">${getFlag(data.code)} ${escapeHtml(country)}</div>`;
-    data.dests.forEach(d => { html += renderDestRow(d); });
-  });
+  if (state.sortMode === 'date') {
+    const groups = groupByDate(filtered, todayStr(), currentLang);
+    [['upcoming', t('sectionUpcoming')], ['past', t('sectionPast')], ['undated', t('sectionUndated')]]
+      .forEach(([key, label]) => {
+        if (groups[key].length === 0) return;
+        html += `<div class="country-sep">${label}</div>`;
+        groups[key].forEach(d => { html += renderDestRow(d, true); });
+      });
+  } else {
+    // Group by country, alphabetically
+    const countries = {};
+    filtered.forEach(d => {
+      const c = d.country || t('otherCountry');
+      if (!countries[c]) countries[c] = { code: d.countryCode, dests: [] };
+      countries[c].dests.push(d);
+    });
+    Object.entries(countries)
+      .sort((a, b) => a[0].localeCompare(b[0], currentLang))
+      .forEach(([country, data]) => {
+        html += `<div class="country-sep">${getFlag(data.code)} ${escapeHtml(country)}</div>`;
+        data.dests
+          .sort((a, b) => (a.name || '').localeCompare(b.name || '', currentLang))
+          .forEach(d => { html += renderDestRow(d, false); });
+      });
+  }
 
   container.innerHTML = html;
 }
 
-function renderDestRow(d) {
+function renderDestRow(d, showFlag) {
   const status = d.status || 'idea';
 
-  // Photo
   const photoStyle = d.photoUrl
     ? `background-image: url('${cssUrl(unsplashUrl(d.photoUrl, 'thumb'))}')`
     : '';
 
-  // Subtitle: tags + flight + best months
+  // Subtitle: tags + travel time + best months
   const parts = [];
   if (d.tags && d.tags.length > 0) parts.push(d.tags.join(' · '));
   if (d.flightTime) parts.push('✈ ' + d.flightTime);
-  if (d.bestMonths) parts.push('☀ ' + d.bestMonths);
+  const best = bestMonthsLabel(d);
+  if (best) parts.push('☀ ' + best);
   const sub = parts.join('  ·  ');
 
-  // Date info
+  // Date info: next trip, otherwise the latest one
   let dateHtml = '';
   const today = todayStr();
   if (d.trips && d.trips.length > 0) {
-    const futureTrips = d.trips.filter(t => t.start >= today).sort((a, b) => a.start.localeCompare(b.start));
-    const pastTrips = d.trips.filter(t => t.start < today).sort((a, b) => b.start.localeCompare(a.start));
+    const futureTrips = d.trips.filter(trip => (trip.end || trip.start) >= today).sort((a, b) => a.start.localeCompare(b.start));
+    const pastTrips = d.trips.filter(trip => (trip.end || trip.start) < today).sort((a, b) => b.start.localeCompare(a.start));
     const trip = futureTrips[0] || pastTrips[0];
-    if (trip) {
-      const dateClass = status === 'done' ? 'done' : (trip.start >= today ? 'planned' : 'done');
-      const dateText = formatDateShort(trip.start) + (trip.end && trip.end !== trip.start ? ' → ' + formatDateShort(trip.end) : '');
-      const days = getDaysBetween(trip.start, trip.end || trip.start);
-      dateHtml = `
-        <div class="dest-date ${dateClass}">${dateText}</div>
-        <div class="dest-meta">${days}${t('dayShort')}</div>
-      `;
-    }
+    const dateClass = futureTrips[0] ? 'planned' : 'done';
+    const dateText = formatDateShort(trip.start) + (trip.end && trip.end !== trip.start ? ' → ' + formatDateShort(trip.end) : '');
+    const year = trip.start.slice(0, 4) !== today.slice(0, 4) ? ` · ${trip.start.slice(0, 4)}` : '';
+    const days = getDaysBetween(trip.start, trip.end || trip.start);
+    dateHtml = `
+      <div class="dest-date ${dateClass}">${dateText}</div>
+      <div class="dest-meta">${days}${t('dayShort')}${year}</div>
+    `;
   } else {
     const labels = { done: t('statusLabelDone'), planned: t('statusLabelPlanned'), idea: t('statusLabelIdea') };
     dateHtml = `<div class="dest-date none">${labels[status] || t('statusLabelIdea')}</div>`;
@@ -913,11 +861,71 @@ function renderDestRow(d) {
     <div class="dest-row ${status}" role="button" tabindex="0" onclick="showDetail('${d.id}')" onkeydown="onActivateKey(event, '${d.id}')">
       <div class="dest-photo" ${photoStyle ? `style="${photoStyle}"` : ''}></div>
       <div class="dest-info">
-        <div class="dest-name">${escapeHtml(d.name)}</div>
+        <div class="dest-name">${showFlag ? getFlag(d.countryCode) + ' ' : ''}${escapeHtml(d.name)}</div>
         ${sub ? `<div class="dest-sub">${escapeHtml(sub)}</div>` : ''}
       </div>
       <div class="dest-right">${dateHtml}</div>
     </div>
+  `;
+}
+
+// ============================================
+// STATS
+// ============================================
+
+function renderStats() {
+  const container = document.getElementById('stats-content');
+  if (state.destinations.length === 0) {
+    container.innerHTML = `<div class="list-empty"><div class="list-empty-icon">📊</div><p>${t('noDestinations')}</p></div>`;
+    return;
+  }
+
+  const s = computeStats(state.destinations, todayStr());
+  const currentYear = new Date().getFullYear();
+
+  const tile = (value, label, sub = '') => `
+    <div class="stat-tile">
+      <div class="stat-value">${value}</div>
+      <div class="stat-label">${label}</div>
+      ${sub ? `<div class="stat-sub">${sub}</div>` : ''}
+    </div>
+  `;
+
+  // Days per year: from the first year with a trip (8 years max) to the current one
+  const years = Object.keys(s.daysPerYear).map(Number);
+  const firstYear = Math.max(Math.min(currentYear, ...years), currentYear - 7);
+  const rows = [];
+  for (let y = firstYear; y <= currentYear; y++) rows.push([y, s.daysPerYear[y] || 0]);
+  const maxDays = Math.max(1, ...rows.map(([, d]) => d));
+  const barsHtml = rows.map(([year, days]) => `
+    <div class="stat-bar-row">
+      <span class="stat-bar-year">${year}</span>
+      <div class="stat-bar-track"><div class="stat-bar" style="width:${(days / maxDays * 100).toFixed(1)}%"></div></div>
+      <span class="stat-bar-value">${days} ${days > 1 ? t('days') : t('day')}</span>
+    </div>
+  `).join('');
+
+  const flags = codes => codes.length
+    ? `<div class="stat-flags">${codes.map(c => `<span title="${escapeHtml(c.toUpperCase())}">${getFlag(c)}</span>`).join('')}</div>`
+    : `<p class="stat-empty">—</p>`;
+
+  const nbCountries = s.visitedCountries.length;
+  container.innerHTML = `
+    <div class="stats-grid">
+      ${tile(nbCountries, nbCountries > 1 ? t('statCountries') : t('statCountry'), t('statWorld', { pct: s.worldPercent.toLocaleString(getLocale()) }))}
+      ${tile(s.visitedCount, s.visitedCount > 1 ? t('statVisitedP') : t('statVisited'), t('statOf', { n: s.total }))}
+      ${tile(s.daysThisYear, t('statDaysYear', { year: currentYear }), s.plannedDaysThisYear ? t('statDaysPlanned', { n: s.plannedDaysThisYear }) : '')}
+      ${tile(s.upcomingTrips, s.upcomingTrips > 1 ? t('statUpcomingP') : t('statUpcoming'), t('statIdeas', { n: s.ideaCount }))}
+    </div>
+
+    <h3 class="stats-title">${t('statDaysPerYear')}</h3>
+    <div class="stat-bars">${barsHtml}</div>
+
+    <h3 class="stats-title">${t('statVisitedCountries')}</h3>
+    ${flags(s.visitedCountries)}
+
+    <h3 class="stats-title">${t('statWishCountries')}</h3>
+    ${flags(s.wishCountries)}
   `;
 }
 
@@ -1208,7 +1216,8 @@ function openAddModal() {
   document.getElementById('dest-notes').value = '';
   document.getElementById('dest-tags').value = '';
   document.getElementById('dest-flight').value = '';
-  document.getElementById('dest-best-months').value = '';
+  state._editBestMonths = new Set();
+  renderBestMonthChips();
   document.getElementById('dest-photo').value = '';
   document.getElementById('photo-preview').classList.add('hidden');
   document.getElementById('date-rows').innerHTML = '';
@@ -1239,7 +1248,8 @@ function openEditModal(dest) {
   document.getElementById('dest-notes').value = dest.notes || '';
   document.getElementById('dest-tags').value = (dest.tags || []).join(', ');
   document.getElementById('dest-flight').value = dest.flightTime || '';
-  document.getElementById('dest-best-months').value = dest.bestMonths || '';
+  state._editBestMonths = new Set(parseBestMonths(dest.bestMonths));
+  renderBestMonthChips();
   document.getElementById('dest-photo').value = dest.photoUrl || '';
   updatePhotoPreview(dest.photoUrl || '');
   document.getElementById('geocode-suggestions').classList.add('hidden');
@@ -1273,6 +1283,20 @@ function setStatus(status) {
   document.querySelectorAll('.status-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.status === status);
   });
+}
+
+function renderBestMonthChips() {
+  const el = document.getElementById('dest-best-months');
+  el.innerHTML = getMonthNames().map((name, i) => {
+    const on = state._editBestMonths.has(i);
+    return `<button type="button" class="month-chip${on ? ' active' : ''}" aria-pressed="${on}" onclick="toggleBestMonth(${i})">${name}</button>`;
+  }).join('');
+}
+
+function toggleBestMonth(month) {
+  if (state._editBestMonths.has(month)) state._editBestMonths.delete(month);
+  else state._editBestMonths.add(month);
+  renderBestMonthChips();
 }
 
 function addDateRow(startVal, endVal) {
@@ -1340,7 +1364,7 @@ async function saveDestination() {
     notes: document.getElementById('dest-notes').value.trim(),
     tags,
     flightTime: document.getElementById('dest-flight').value.trim(),
-    bestMonths: document.getElementById('dest-best-months').value.trim(),
+    bestMonths: [...state._editBestMonths].sort((a, b) => a - b),
     photoUrl,
     trips
   };
@@ -1559,8 +1583,9 @@ function showDetail(id) {
   if (dest.flightTime) {
     infoRows += `<div class="detail-info-row"><span class="detail-info-label">${t('detailTravel')}</span><span class="detail-info-value">${escapeHtml(dest.flightTime)}</span></div>`;
   }
-  if (dest.bestMonths) {
-    infoRows += `<div class="detail-info-row"><span class="detail-info-label">${t('detailBestMonths')}</span><span class="detail-info-value">${escapeHtml(dest.bestMonths)}</span></div>`;
+  const best = bestMonthsLabel(dest);
+  if (best) {
+    infoRows += `<div class="detail-info-row"><span class="detail-info-label">${t('detailBestMonths')}</span><span class="detail-info-value">${escapeHtml(best)}</span></div>`;
   }
 
   let datesHtml = '';
@@ -1654,7 +1679,8 @@ function renderAll() {
   renderList();
   renderMapMarkers();
   renderPlanning();
-  updateMonthBarTrips();
+  renderStats();
+  updateMonthBar();
 }
 
 // ============================================
@@ -1686,15 +1712,10 @@ function formatDateLong(dateStr) {
   return d.toLocaleDateString(getLocale(), { day: 'numeric', month: 'long', year: 'numeric' });
 }
 
-function getDaysBetween(start, end) {
-  const s = new Date(start + 'T00:00:00');
-  const e = new Date(end + 'T00:00:00');
-  return Math.max(1, Math.round((e - s) / (1000 * 60 * 60 * 24)) + 1);
-}
+// Dates, filtering, best months, next trip and stats helpers live in logic.js
 
-function todayStr() {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+function bestMonthsLabel(dest) {
+  return formatBestMonths(dest.bestMonths, getMonthNames(), t('allYear'));
 }
 
 // Percent-encode characters that could break out of url('...') or a style attribute
@@ -1716,7 +1737,6 @@ window.loginUser = loginUser;
 window.registerUser = registerUser;
 window.loginGoogle = loginGoogle;
 window.resetPassword = resetPassword;
-window.loginDemo = loginDemo;
 window.logout = logout;
 window.toggleUserMenu = toggleUserMenu;
 window.switchView = switchView;
@@ -1725,6 +1745,10 @@ window.closeModal = closeModal;
 window.toggleFilter = toggleFilter;
 window.onSearch = onSearch;
 window.setMonthFilter = setMonthFilter;
+window.setMonthMode = setMonthMode;
+window.changeFilterYear = changeFilterYear;
+window.setSortMode = setSortMode;
+window.toggleBestMonth = toggleBestMonth;
 window.changePlanningYear = changePlanningYear;
 window.onDestNameInput = onDestNameInput;
 window.selectGeoSuggestion = selectGeoSuggestion;

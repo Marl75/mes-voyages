@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mes Voyages — tests</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 24px 16px; color: #1a1a1a; background: #F6F5F1; }
+    h1 { font-size: 1.1rem; }
+    li { margin: 4px 0; list-style: none; }
+    .ok { color: #15803D; } .ko { color: #B91C1C; }
+    pre { margin: 2px 0 0 18px; white-space: pre-wrap; font-size: 0.8rem; }
+  </style>
+</head>
+<body>
+  <h1 id="summary">Tests…</h1>
+  <ul id="results"></ul>
+  <script src="../logic.js"></script>
+  <script src="logic.test.js"></script>
+  <script>
+    const nbFailed = testResults.filter(r => !r.ok).length;
+    document.getElementById('summary').textContent =
+      `${testResults.length - nbFailed}/${testResults.length} tests réussis`;
+    document.getElementById('summary').className = nbFailed ? 'ko' : 'ok';
+    document.getElementById('results').innerHTML = testResults.map(r =>
+      `<li class="${r.ok ? 'ok' : 'ko'}">${r.ok ? '✓' : '✗'} ${r.name}${r.ok ? '' : `<pre>${r.error}</pre>`}</li>`
+    ).join('');
+  </script>
+</body>
+</html>
