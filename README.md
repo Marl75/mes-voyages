@@ -1,6 +1,8 @@
-# Mes Voyages
+# My Trips (Mes Voyages)
 
-Progressive Web App to plan trips (FR/EN):
+**Live app: [marl75.github.io/mes-voyages](https://marl75.github.io/mes-voyages/)** · available in English and French
+
+Progressive web app to plan trips:
 
 - **List** grouped by country or by date, with the next trip on top and a month filter (trips of a given month/year, or destinations ideal that month)
 - **Map** of countries and destinations
