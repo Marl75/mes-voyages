@@ -157,7 +157,17 @@ const I18N = {
   }
 };
 
-let currentLang = localStorage.getItem('mv-lang') || 'fr';
+// Language: ?lang=en or ?lang=fr in the address wins (and is remembered),
+// then the saved choice, then the browser language
+let currentLang = (() => {
+  try {
+    const urlLang = new URLSearchParams(location.search).get('lang');
+    if (urlLang === 'en' || urlLang === 'fr') localStorage.setItem('mv-lang', urlLang);
+    const saved = localStorage.getItem('mv-lang');
+    if (saved === 'en' || saved === 'fr') return saved;
+  } catch (e) {}
+  return (navigator.language || 'fr').toLowerCase().startsWith('fr') ? 'fr' : 'en';
+})();
 
 function t(key, params) {
   const str = I18N[currentLang]?.[key] || I18N.fr[key] || key;

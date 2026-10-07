@@ -1,6 +1,10 @@
 # My Trips (Mes Voyages)
 
-**Live app: [marl75.github.io/mes-voyages](https://marl75.github.io/mes-voyages/)** · available in English and French
+**Live app: [marl75.github.io/mes-voyages](https://marl75.github.io/mes-voyages/?lang=en)** · available in English and French (an account is needed to use it)
+
+<img src="screenshots/list.png" alt="My Trips list view with sample trips" width="440"> <img src="screenshots/stats.png" alt="My Trips statistics with sample trips" width="440">
+
+*Screenshots taken with sample trips.*
 
 Progressive web app to plan trips:
 
@@ -8,6 +12,10 @@ Progressive web app to plan trips:
 - **Map** of countries and destinations
 - **Timeline** of trips per year
 - **Stats**: countries visited, share of the world, travel days per year
+
+## Language
+
+The app follows the browser language. `?lang=en` or `?lang=fr` in the address forces it, and the FR/EN switch in the app remembers the choice.
 
 ## Stack
 
